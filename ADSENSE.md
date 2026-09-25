@@ -1,6 +1,6 @@
 # Advertising and AdSense readiness
 
-The code supports Google AdSense integration, but approval is not guaranteed. Google decides whether a live site and publisher account meet its requirements. A small two-game catalogue may need more useful original content and real use before approval. Do not fabricate traffic, reviews, game counts or endorsements.
+The code supports Google AdSense integration, but approval is not guaranteed. Google decides whether a live site and publisher account meet its requirements. A small game catalogue may need more useful original content and real use before approval. Do not fabricate traffic, reviews, game counts or endorsements.
 
 ## Implemented support
 

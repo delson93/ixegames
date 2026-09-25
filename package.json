@@ -1,1 +1,15 @@
-{"name":"ixegames","version":"1.0.0","private":true,"type":"module","engines":{"node":">=22"},"scripts":{"start":"node --env-file-if-exists=.env server.js","dev":"node --env-file-if-exists=.env --watch server.js","test":"node --test","check":"node --check server.js && node --check public/games.js && node --check public/app.js"}}
+{
+  "name": "ixegames",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js",
+    "test": "node --test",
+    "check": "node --check server.js && node --check public/games.js && node --check public/app.js && node --check public/engine.js && node --check public/racing.js && node --check public/audio.js"
+  }
+}

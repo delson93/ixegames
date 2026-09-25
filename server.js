@@ -18,7 +18,7 @@ const cleanup=setInterval(()=>{const now=Date.now();for(const [k,v]of sessions)i
 export function verifyPassword(password,hash){try{const [salt,expected]=hash.split(':');if(!/^[a-f0-9]{32}$/.test(salt)||!/^[a-f0-9]{128}$/.test(expected))return false;const actual=scryptSync(password,salt,64);return timingSafeEqual(actual,Buffer.from(expected,'hex'));}catch{return false;}}
 async function form(req){let body='';for await(const c of req){body+=c;if(Buffer.byteLength(body)>16384)throw Object.assign(Error('Request too large'),{status:413});}return Object.fromEntries(new URLSearchParams(body));}
 const types={'.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.png':'image/png'};
-const files=new Set(['style.css','app.js','games.js','engine.js','tank.svg','snake.svg','hero.svg','favicon.svg','social.svg','social.png']);
+const files=new Set(['style.css','app.js','games.js','engine.js','audio.js','racing.js','racing.svg','tank.svg','snake.svg','hero.svg','favicon.svg','social.svg','social.png']);
 function cookie(value,maxAge){return `ixe_session=${value}; HttpOnly; SameSite=Strict; Path=/admin; Max-Age=${maxAge}${secure?'; Secure':''}`;}
 export const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,origin), p=url.pathname;
@@ -38,7 +38,7 @@ export const server=http.createServer(async(req,res)=>{
  if(p==='/ads.txt')return send(200,settings.publisherId?`google.com, ${settings.publisherId.replace('ca-','')}, DIRECT, f08c47fec0942fa0\n`:'# No authorized Google seller configured.\n','text/plain');
  if(p==='/sitemap.xml'){const paths=['/','/about','/contact','/privacy','/terms','/cookies','/accessibility',...activeGames(settings).map(g=>'/games/'+g.id)];return send(200,`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(x=>`<url><loc>${esc(origin+x)}</loc></url>`).join('')}</urlset>`,'application/xml');}
  if(p==='/api/ad-config')return send(200,JSON.stringify({enabled:settings.adsEnabled,publisherId:settings.publisherId,cmpUrl:settings.adsEnabled?process.env.CMP_SCRIPT_URL||'':''}),'application/json');
- if(p==='/')return page('Free online arcade games',home(settings),200,{ads:true,description:'Play Tank Arena and Neon Snake free on ixegames. Instant browser games with keyboard and touch controls. No downloads or player accounts.'});
+ if(p==='/')return page('Free online arcade games',home(settings),200,{ads:true,description:'Play Tank Arena, Neon Snake and Neon Rush racing free on ixegames. Instant browser games with keyboard and touch controls. No downloads or player accounts.'});
  const g=activeGames(settings).find(g=>p==='/games/'+g.id);if(g)return page(`${g.name} - Play free online`,gamePage(g),200,{game:true,ads:true,description:g.description});
  const content=contentPage(settings,p);if(content)return page(content.title,content.body);
  }

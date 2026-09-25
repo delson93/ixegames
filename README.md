@@ -1,6 +1,6 @@
 # ixegames
 
-An original, responsive browser arcade built on Node.js. Two launch games: **Tank Arena** and **Neon Snake**. Players do not need accounts. The design uses dark surfaces, lavender accents, custom SVG illustrations, and accessible keyboard focus states.
+An original, responsive browser arcade built on Node.js. Three games: **Tank Arena**, **Neon Snake**, and **Neon Rush**. Players do not need accounts. The design uses dark surfaces, lavender accents, custom SVG illustrations, and accessible keyboard focus states.
 
 ## Quick start
 
@@ -25,6 +25,8 @@ npm test       # Rules, routing, admin security and persistence tests
 
 - Tank Arena: enemy waves, brick and steel cover, firing cooldowns, armor, and local high scores.
 - Neon Snake: three difficulty settings, food, growth, wall/body collision, and separate local high scores.
+- Neon Rush: five racing stages with increasing speed and traffic, acceleration/braking, condition damage, finish-line bonuses, and a championship win.
+- Original synthesized sound effects in every game, a racing engine sound, and a persistent Sound on/off control. Audio starts only after user interaction and stops on pause/tab changes.
 - Arrow/WASD controls, visible touch controls, swipe steering for Snake, pause, restart, full screen, and automatic pause on tab changes.
 - Server-rendered game pages, original guides, About, Contact, Privacy, Terms, Cookies, Accessibility, and real 404 responses.
 - Canonical URLs, meta descriptions, Open Graph/social PNG, JSON-LD, sitemap, robots.txt, favicon, and dynamic ads.txt.

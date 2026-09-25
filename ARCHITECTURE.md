@@ -15,6 +15,8 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | src/content.js | Game catalogue, original instructions, informational and policy copy |
 | src/views.js | Escaped HTML templates, public layout, admin form, advertising slots |
 | public/engine.js | Pure Snake and Tank simulation functions; accepts injectable randomness |
+| public/racing.js | Five-stage racing simulation, progression and road/car rendering |
+| public/audio.js | Gesture-unlocked Web Audio effects, engine tone, mute persistence and cleanup |
 | public/games.js | Animation loop, canvas rendering, keyboard/touch controls, pause state and local bests |
 | public/app.js | Catalogue filters, saved-score clearing, consent-provider loading and ad gating |
 | public/style.css | Responsive design, focus styles, reduced-motion handling and ad spacing |
@@ -28,7 +30,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | Route | Purpose |
 | --- | --- |
 | / | Searchable/filterable game collection and FAQ |
-| /games/tank, /games/snake | Canvas game plus server-rendered instructions; 404 when disabled |
+| /games/tank, /games/snake, /games/racing | Canvas game plus server-rendered instructions; 404 when disabled |
 | /about, /contact | Operator information and contact guidance |
 | /privacy, /terms, /cookies, /accessibility | Policy and accessibility pages |
 | /admin | Sign-in or protected dashboard; no-store and noindex |
@@ -62,3 +64,11 @@ System fonts avoid font-network requests. SVG assets are local; PNG is supplied 
 ## Extension ideas
 
 Potential future admin options include scheduling banner dates, managing multiple administrators with roles, managing game metadata through a database, first-party aggregate analytics with proper privacy handling, and draft/publish workflows. These are future features, not implemented controls.
+
+## Racing and audio additions
+
+Neon Rush uses a bounded 40ms simulation step, continuous lateral steering, acceleration/braking, three condition points, safe-overtake scoring and five fixed stage configurations. Completing a stage freezes simulation until the player selects Next stage. Stage transitions preserve score and repair one condition point. Completing stage five wins; Restart always begins a fresh run. Racing visibility defaults to enabled when loading older settings files.
+
+Audio is synthesized locally with the Web Audio API. Construction never creates an AudioContext; explicit Play, Resume or Sound actions unlock it. No recording assets or external requests are needed. `ixe-audio-muted` persists the shared sound preference independently of high scores. Pause, blur, tab hiding and page exit stop active voices and the engine. The engine uses one oscillator, updated each frame rather than recreated. Unsupported audio or blocked storage leaves the games playable. Do not make gameplay instructions depend on sound.
+
+Controls and best-score keys remain backward compatible for Tank Arena and Neon Snake. Touch racing supports holding a steering direction and acceleration/brake together.

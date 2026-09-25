@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import path from 'node:path';
-export const defaults = {siteName:'ixegames',tagline:'Small breaks. Big plays.',contactEmail:'',operatorName:'',announcement:'Two classics. A whole arcade on the way.',tankEnabled:true,snakeEnabled:true,adsEnabled:false,publisherId:'',topSlot:'',bottomSlot:'',cmpReady:false,topImage:'',topLink:'',topAlt:'',bottomImage:'',bottomLink:'',bottomAlt:''};
+export const defaults = {siteName:'ixegames',tagline:'Small breaks. Big plays.',contactEmail:'',operatorName:'',announcement:'Three games. A whole arcade on the way.',tankEnabled:true,snakeEnabled:true,racingEnabled:true,adsEnabled:false,publisherId:'',topSlot:'',bottomSlot:'',cmpReady:false,topImage:'',topLink:'',topAlt:'',bottomImage:'',bottomLink:'',bottomAlt:''};
 export function validate(input) {
  const out={};
  for(const [key,value] of Object.entries(defaults)) { if(typeof value==='boolean') out[key]=input[key]===true || input[key]==='on'; else out[key]=String(input[key]??'').trim().slice(0,key==='announcement'?200:500); }

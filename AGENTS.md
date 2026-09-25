@@ -6,7 +6,7 @@ Read README.md, ARCHITECTURE.md, ADSENSE.md, and QA.md before making changes.
 
 - Brand: ixegames. Intended future domain: ixegames.com. SITE_URL controls the actual deployment origin.
 - Free public games; never add player login requirements without an explicit request.
-- Only publish games that are actually playable. Tank Arena and Neon Snake are the initial collection.
+- Only publish games that are actually playable. Tank Arena, Neon Snake, and Neon Rush are the current collection.
 - Retain the modern dark/lavender design and responsive keyboard/touch controls.
 - Preserve original code and artwork. Do not import copyrighted franchise graphics, sounds, levels, or branding.
 - Never promise AdSense approval or guaranteed search rankings.
@@ -14,7 +14,7 @@ Read README.md, ARCHITECTURE.md, ADSENSE.md, and QA.md before making changes.
 ## Implementation rules
 
 - Node.js 22+, ESM, no runtime dependencies. Prefer small focused modules and server-rendered content.
-- Keep pure simulation logic in public/engine.js and browser interaction/rendering in public/games.js.
+- Keep pure simulation logic in public/engine.js and public/racing.js; shared browser orchestration lives in public/games.js, and synthesized audio lives in public/audio.js.
 - Escape all administrator-controlled content with esc() before HTML output.
 - Never expose ADMIN_PASSWORD_HASH, cookies, CSRF tokens, or .env in client configuration or commits.
 - All admin writes require authentication, same-origin validation, and CSRF validation.
@@ -41,3 +41,5 @@ Run `npm run check` and `npm test`. Add meaningful regression tests when changin
 ## Operational constraints
 
 The current storage layer assumes one Node.js process and one persistent data directory. Server restart invalidates admin sessions. Multi-instance deployments require shared state and locks. Do not weaken these boundaries to make a deployment appear successful.
+
+- Audio must remain optional, start only after a user gesture, respect the persisted mute preference and stop on pause or page exit. Never add unlicensed recordings.
