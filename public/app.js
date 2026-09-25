@@ -1,0 +1,14 @@
+const all=(s)=>[...document.querySelectorAll(s)];
+let filter='all';
+function filterGames(){let count=0;const q=document.querySelector('#game-search')?.value.toLowerCase()||'';all('[data-category]').forEach(el=>{el.hidden=!((filter==='all'||el.dataset.category===filter)&&el.dataset.name.includes(q));if(!el.hidden)count++;});const empty=document.querySelector('#no-games');if(empty)empty.hidden=count>0;}
+all('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;all('[data-filter]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b));});filterGames();}));
+document.querySelector('#game-search')?.addEventListener('input',filterGames);
+document.querySelector('#clear-data')?.addEventListener('click',()=>{try{Object.keys(localStorage).filter(k=>k.startsWith('ixe-best-')).forEach(k=>localStorage.removeItem(k));document.querySelector('#storage-status').textContent='Saved game scores have been cleared.';}catch{document.querySelector('#storage-status').textContent='Your browser blocked access to local storage.';}});
+document.querySelector('#ad-choices')?.addEventListener('click',()=>{const status=document.querySelector('#consent-status');if(typeof window.googlefc?.showRevocationMessage==='function'){window.googlefc.showRevocationMessage();status.textContent='Advertising preferences opened.';}else if(typeof window.__tcfapi==='function'){window.__tcfapi('displayConsentUi',2,()=>{});status.textContent='Opening advertising choices. If no panel appears, use your consent provider’s settings control.';}else status.textContent='Google advertising is not active on this page.';});
+async function setupAds(){if(document.body.dataset.cmp!=='enabled')return;const config=await fetch('/api/ad-config').then(r=>r.json());if(!config.enabled||!config.cmpUrl)return;
+ const cmp=document.createElement('script');cmp.src=config.cmpUrl;cmp.async=true;document.head.append(cmp);
+ let loaded=false,subscribed=false;
+ const load=()=>{if(loaded||document.body.dataset.ads!=='enabled')return;loaded=true;const script=document.createElement('script');script.async=true;script.crossOrigin='anonymous';script.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+encodeURIComponent(config.publisherId);script.onload=()=>all('.adsbygoogle').forEach(()=>{try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch{}});document.head.append(script);};
+ const timer=setInterval(()=>{if(typeof window.__tcfapi!=='function'||subscribed)return;subscribed=true;clearInterval(timer);window.__tcfapi('addEventListener',2,(tc,ok)=>{if(!ok||!['tcloaded','useractioncomplete'].includes(tc.eventStatus))return;const allowed=tc.gdprApplies===false||(tc.gdprApplies===true&&tc.purpose?.consents?.[1]&&tc.vendor?.consents?.[755]);if(allowed)load();else if(loaded)location.reload();});},250);setTimeout(()=>clearInterval(timer),15000);
+}
+setupAds().catch(()=>{});
