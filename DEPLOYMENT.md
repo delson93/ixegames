@@ -85,3 +85,7 @@ For multiple replicas, replace in-memory sessions and JSON settings with shared 
 - Verify Search Console ownership and submit the sitemap.
 - Inspect a public game page with Google's URL inspection and structured-data tools.
 - Do not enable production advertising until account, policy and consent setup is reviewed.
+
+## Accessing the administrator dashboard
+
+Navigate to `/admin` on the deployed origin. For example, after your domain is connected, the path is `https://ixegames.com/admin`. No default password is provided. Generate your password hash with `node scripts/password.mjs` from the project directory, copy the generated ADMIN_PASSWORD_HASH line into `.env`, and restart the existing Node process through your hosting platform. Use the plain password you chose to sign in. Do not start a second process on the same port. If POST requests show Invalid request origin, make SITE_URL match the exact HTTPS hostname being used and restart.

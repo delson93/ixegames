@@ -7,3 +7,20 @@
 @media(min-width:1100px){.game-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.card-info{padding:20px 18px}.card-info h3{font-size:24px}.card-meta{padding:12px 18px;gap:12px}.game-art{aspect-ratio:1.65}}
 .game-toolbar{flex-wrap:wrap}.game-toolbar>#sound{margin-left:auto}.game-toolbar>#fullscreen{margin-left:0}
 @media(max-width:680px){.scorebar{flex-wrap:wrap}.scorebar>#extra-stat{flex-basis:100%;font-size:10px}.game-toolbar>#sound{margin-left:0}}
+/* Expanded play surfaces: no 720px canvas or 820px shell cap. */
+.game-section{width:100%;max-width:1600px;padding:30px clamp(10px,2vw,32px) 60px}
+.game-shell{width:100%;max-width:none;padding:clamp(8px,1.4vw,20px)}
+.canvas-wrap{width:100%;max-width:none;aspect-ratio:4/3}
+canvas{width:100%;height:100%;aspect-ratio:4/3;object-fit:contain}
+.game-page .game-toolbar{position:relative;gap:12px}
+.game-page .touch-controls button{min-width:48px;min-height:48px}
+.game-expanded{overflow:hidden}
+.game-shell.theater{position:fixed;inset:0;z-index:1000;margin:0;background:#11151f;border-radius:0}
+.game-shell:is(:fullscreen,.theater){width:100%;height:100dvh;max-width:none;display:flex;flex-direction:column;align-items:stretch;overflow:hidden;padding:10px;--chrome:125px}
+.game-shell:is(:fullscreen,.theater) .canvas-wrap{width:min(100%,calc((100dvh - var(--chrome))*4/3));max-width:none;flex:0 1 auto;min-height:0;margin:0 auto;aspect-ratio:4/3}
+.game-shell:is(:fullscreen,.theater) .game-toolbar{margin:8px 0 0;flex-shrink:0}
+.game-shell:is(:fullscreen,.theater) .scorebar{margin:0 0 8px;flex-shrink:0}
+.game-shell:is(:fullscreen,.theater) .game-state{margin:3px 0;font-size:10px}
+@media(pointer:coarse),(max-width:1000px){.touch-controls{display:flex}.game-shell:is(:fullscreen,.theater){--chrome:270px}.game-shell:is(:fullscreen,.theater) .touch-controls{margin-top:5px;flex-shrink:0}}
+@media(max-width:680px){.game-section{padding:20px 6px 40px}.game-section>.section-heading,.game-description,.back-link{margin-left:10px;margin-right:10px}.game-shell{padding:6px;border-radius:8px}.game-toolbar{justify-content:center}.game-overlay h2{font-size:clamp(24px,6vw,42px)}.game-shell:is(:fullscreen,.theater){--chrome:290px}}
+@media(orientation:landscape) and (max-height:600px){.game-shell:is(:fullscreen,.theater){--chrome:100px}.game-shell:is(:fullscreen,.theater) .scorebar{flex-wrap:nowrap;font-size:8px}.game-shell:is(:fullscreen,.theater) .scorebar>#extra-stat{flex-basis:auto}.game-shell:is(:fullscreen,.theater) .touch-controls{position:absolute;left:8px;right:8px;bottom:70px;justify-content:space-between;pointer-events:none}.game-shell:is(:fullscreen,.theater) .touch-controls button{pointer-events:auto;background:#28263be6}.game-shell:is(:fullscreen,.theater) .game-state{display:none}}

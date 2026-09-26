@@ -1,6 +1,6 @@
 # ixegames
 
-An original, responsive browser arcade built on Node.js. Three games: **Tank Arena**, **Neon Snake**, and **Neon Rush**. Players do not need accounts. The design uses dark surfaces, lavender accents, custom SVG illustrations, and accessible keyboard focus states.
+An original, responsive browser arcade built on Node.js. Five games: **Tank Arena**, **Neon Snake**, **Neon Rush**, **Velocity Rider**, and **Sky Blitz**. Players do not need accounts. The design uses dark surfaces, lavender accents, custom SVG illustrations, and accessible keyboard focus states.
 
 ## Quick start
 
@@ -25,7 +25,10 @@ npm test       # Rules, routing, admin security and persistence tests
 
 - Tank Arena: enemy waves, brick and steel cover, firing cooldowns, armor, and local high scores.
 - Neon Snake: three difficulty settings, food, growth, wall/body collision, and separate local high scores.
-- Neon Rush: five racing stages with increasing speed and traffic, acceleration/braking, condition damage, finish-line bonuses, and a championship win.
+- Neon Rush: ten faster racing stages with increasing speed and traffic, acceleration/braking, condition damage, finish-line bonuses, and a championship win.
+- Velocity Rider: ten motorcycle stages with Up/Down throttle adjustment, speed holding on release, and braking to a stop.
+- Sky Blitz: six high-speed jet missions with ring collection, storm avoidance, hull damage and Space/touch boost.
+- Larger responsive canvases up to a 1600px page width, sharper high-DPI rendering, full screen and an in-page full-screen fallback.
 - Original synthesized sound effects in every game, a racing engine sound, and a persistent Sound on/off control. Audio starts only after user interaction and stops on pause/tab changes.
 - Arrow/WASD controls, visible touch controls, swipe steering for Snake, pause, restart, full screen, and automatic pause on tab changes.
 - Server-rendered game pages, original guides, About, Contact, Privacy, Terms, Cookies, Accessibility, and real 404 responses.
@@ -53,3 +56,11 @@ Google advertising is **off by default**. The website provides integration suppo
 This version uses a single Node process and local JSON settings. Sessions and rate-limit counters live in memory, so restarts sign administrators out. Use shared storage/session infrastructure before running multiple application instances. No analytics service, public leaderboard, player database, remote score collection, arbitrary HTML injection, or email sending is included.
 
 The repository is implementation-ready, but domain connection, production hosting, operator/contact details, a real AdSense account, and certified consent-provider configuration remain deployment tasks. Browser visual/touch QA must be completed as described in QA.md.
+
+## Administrator access
+
+Open `/admin` on your deployed domain. There is no player login and no default admin password.
+
+If administrator access is locked, run `node scripts/password.mjs` in the application directory, choose a password of at least 16 characters, and put the generated `ADMIN_PASSWORD_HASH=...` line in your private `.env`. Restart the Node application using your hosting platform or process manager. Then sign in with the password you chose. Ensure SITE_URL matches the exact public origin; use COOKIE_SECURE=true on HTTPS.
+
+Do not put the plain password or generated hash into Git. Resetting the password uses the same procedure and restarting invalidates old administrator sessions.

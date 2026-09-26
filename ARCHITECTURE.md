@@ -15,7 +15,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | src/content.js | Game catalogue, original instructions, informational and policy copy |
 | src/views.js | Escaped HTML templates, public layout, admin form, advertising slots |
 | public/engine.js | Pure Snake and Tank simulation functions; accepts injectable randomness |
-| public/racing.js | Five-stage racing simulation, progression and road/car rendering |
+| public/racing.js | Ten-stage car/bike racing simulation, progression and road/car rendering |
 | public/audio.js | Gesture-unlocked Web Audio effects, engine tone, mute persistence and cleanup |
 | public/games.js | Animation loop, canvas rendering, keyboard/touch controls, pause state and local bests |
 | public/app.js | Catalogue filters, saved-score clearing, consent-provider loading and ad gating |
@@ -30,7 +30,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | Route | Purpose |
 | --- | --- |
 | / | Searchable/filterable game collection and FAQ |
-| /games/tank, /games/snake, /games/racing | Canvas game plus server-rendered instructions; 404 when disabled |
+| /games/tank, /games/snake, /games/racing, /games/bike, /games/aviation | Canvas game plus server-rendered instructions; 404 when disabled |
 | /about, /contact | Operator information and contact guidance |
 | /privacy, /terms, /cookies, /accessibility | Policy and accessibility pages |
 | /admin | Sign-in or protected dashboard; no-store and noindex |
@@ -67,8 +67,16 @@ Potential future admin options include scheduling banner dates, managing multipl
 
 ## Racing and audio additions
 
-Neon Rush uses a bounded 40ms simulation step, continuous lateral steering, acceleration/braking, three condition points, safe-overtake scoring and five fixed stage configurations. Completing a stage freezes simulation until the player selects Next stage. Stage transitions preserve score and repair one condition point. Completing stage five wins; Restart always begins a fresh run. Racing visibility defaults to enabled when loading older settings files.
+Neon Rush uses a bounded 40ms simulation step, continuous lateral steering, acceleration/braking, three condition points, safe-overtake scoring and ten fixed stage configurations. Completing a stage freezes simulation until the player selects Next stage. Stage transitions preserve score and repair one condition point. Completing stage ten wins; Restart always begins a fresh run. Racing visibility defaults to enabled when loading older settings files.
 
 Audio is synthesized locally with the Web Audio API. Construction never creates an AudioContext; explicit Play, Resume or Sound actions unlock it. No recording assets or external requests are needed. `ixe-audio-muted` persists the shared sound preference independently of high scores. Pause, blur, tab hiding and page exit stop active voices and the engine. The engine uses one oscillator, updated each frame rather than recreated. Unsupported audio or blocked storage leaves the games playable. Do not make gameplay instructions depend on sound.
 
 Controls and best-score keys remain backward compatible for Tank Arena and Neon Snake. Touch racing supports holding a steering direction and acceleration/brake together.
+
+## Expanded arcade and responsive rendering
+
+Velocity Rider reuses the racing engine with `mode: bike`, a narrow motorcycle, and persistent throttle. Up/W increases throttle at 40 percentage points per second; Down/S reduces it at 60 per second. Releasing both holds speed. At zero speed the world and spawn countdown stop. Stage transitions reset bike throttle to zero. Car cruising speeds now range from 320 to 700 logical pixels/second and acceleration multiplies them by 1.35.
+
+`public/aviation.js` contains the pure flight state, six mission configurations, collision rules and jet renderer. Sky Blitz scrolls at 340 to 565 logical pixels/second, with a 1.45 boost multiplier. Players collect mission-specific ring targets while avoiding storm cells. Missing a ring does not fail the mission. Damage grants brief invulnerability; completing a mission repairs one hull point on continuation.
+
+The canvas retains a 720×540 simulation coordinate system but ResizeObserver resizes its drawing buffer to match the actual displayed size, with devicePixelRatio capped at two. A transform maps logical coordinates to the display buffer. CSS removes the old 720/820px display limits. Native full screen uses the available viewport with controls visible; unsupported requests fall back to a fixed full-viewport theater panel. Escape or the exit button closes the fallback. Aspect ratio is preserved to avoid distorting physics or sprites. Versioned stylesheet and game-module URLs prevent mixing old cached clients with this release.
