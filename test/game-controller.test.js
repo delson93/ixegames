@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 // DOM adapter smoke test, not a substitute for real-browser visual/touch QA.
-test('all five controllers initialize, start, resize, pause, resume and restart',async()=>{
+test('all six controllers initialize, start, resize, pause, resume and restart',async()=>{
  const saved=new Map(['document','window','localStorage','requestAnimationFrame','ResizeObserver'].map(k=>[k,globalThis[k]]));
  try{
- for(const type of ['tank','snake','racing','bike','aviation']){
+ for(const type of ['tank','snake','racing','bike','aviation','fighter']){
   const callbacks=new Map();let nextFrame;
   const classes=()=>{const s=new Set();return {toggle(k,v){if(v)s.add(k);else s.delete(k);},contains:k=>s.has(k)};};
   const ctx=new Proxy({},{get(o,k){return o[k]??(()=>{});},set(o,k,v){o[k]=v;return true;}});

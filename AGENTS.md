@@ -6,7 +6,7 @@ Read README.md, ARCHITECTURE.md, ADSENSE.md, and QA.md before making changes.
 
 - Brand: ixegames. Intended future domain: ixegames.com. SITE_URL controls the actual deployment origin.
 - Free public games; never add player login requirements without an explicit request.
-- Only publish games that are actually playable. Tank Arena, Neon Snake, Neon Rush, Velocity Rider, and Sky Blitz are the current collection.
+- Only publish games that are actually playable. Tank Arena, Neon Snake, Neon Rush, Velocity Rider, Sky Blitz, and Fighter Command are the current collection.
 - Retain the modern dark/lavender design and responsive keyboard/touch controls.
 - Preserve original code and artwork. Do not import copyrighted franchise graphics, sounds, levels, or branding.
 - Never promise AdSense approval or guaranteed search rankings.
@@ -14,7 +14,7 @@ Read README.md, ARCHITECTURE.md, ADSENSE.md, and QA.md before making changes.
 ## Implementation rules
 
 - Node.js 22+, ESM, no runtime dependencies. Prefer small focused modules and server-rendered content.
-- Keep pure simulation logic in public/engine.js, public/racing.js and public/aviation.js; shared browser orchestration lives in public/games.js, and synthesized audio lives in public/audio.js.
+- Keep pure simulation logic in public/engine.js, public/racing.js, public/aviation.js and public/fighter.js; shared browser orchestration lives in public/games.js, and synthesized audio lives in public/audio.js.
 - Escape all administrator-controlled content with esc() before HTML output.
 - Never expose ADMIN_PASSWORD_HASH, cookies, CSRF tokens, or .env in client configuration or commits.
 - All admin writes require authentication, same-origin validation, and CSRF validation.
@@ -45,3 +45,5 @@ The current storage layer assumes one Node.js process and one persistent data di
 - Audio must remain optional, start only after a user gesture, respect the persisted mute preference and stop on pause or page exit. Never add unlicensed recordings.
 
 - Preserve user-controlled bike throttle: Up accelerates, Down brakes, releasing both holds speed. Keep simulation coordinates independent from responsive canvas resolution.
+
+- Fighter Command uses Right/Left for throttle/braking and Up/Down for altitude. Keep takeoff, combat, landing and rollout distinct. Landing requires a marked surface, safe speed and descent, plus room to stop. See FIGHTER.md before changing flight rules.

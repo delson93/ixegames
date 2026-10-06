@@ -2,7 +2,7 @@
 
 ## Completed automated checks
 
-`npm run check` validates JavaScript syntax. `npm test` runs 32 tests covering:
+`npm run check` validates JavaScript syntax. `npm test` runs 39 tests covering:
 
 - Snake reversal and turn buffering, growth, food placement, wall/body collision, vacated tail movement and full-board win.
 - Tank movement barriers, firing cooldowns, enemy score, wave progression, brick/steel collision, armor damage and invulnerability.
@@ -22,7 +22,7 @@ Before public launch, run these checks in current Chrome, Firefox and Safari, pl
 
 1. Inspect homepage at 390px, 768px and 1440px widths. Verify no horizontal overflow, cropped text or overlapping controls.
 2. Search games and switch categories; verify the empty-state message.
-3. Start all five games; use WASD/arrows, touchscreen controls and Snake swipes.
+3. Start all six games; use WASD/arrows, touchscreen controls and Snake swipes.
 4. Confirm game input does not scroll the page while playing and ordinary page controls still work.
 5. Pause/resume, switch tabs, return, restart, change Snake pace and use full screen.
 6. Play to a game over; verify score, best-score storage, difficulty separation and behavior with blocked local storage.
@@ -53,6 +53,12 @@ Before public launch, run these checks in current Chrome, Firefox and Safari, pl
 
 ## Expanded arcade checks
 
-Automated coverage now includes stopped-bike behavior, Up/Down throttle changes, speed holding, throttle clamps, next-stage resets, aviation movement boundaries, boost, ring scoring, storm invulnerability, six-mission completion, new public routes, and visibility controls. A mocked DOM adapter runs all five game controllers through initialization, high-DPI resize, start/pause/resume/restart and the theater fallback. This is not a real CSS layout or touchscreen test.
+Automated coverage now includes stopped-bike behavior, Up/Down throttle changes, speed holding, throttle clamps, next-stage resets, aviation movement boundaries, boost, ring scoring, storm invulnerability, six-mission completion, new public routes, and visibility controls. A mocked DOM adapter runs all six game controllers through initialization, high-DPI resize, start/pause/resume/restart and the theater fallback. This is not a real CSS layout or touchscreen test.
 
 Before launch, check the expanded canvas at 320, 390, 768, 1440 and 1920px widths, and both phone orientations. Confirm full-screen controls remain visible, aspect ratio remains 4:3, no horizontal scrolling appears, and Escape/exit restores normal page scrolling. Test bike acceleration and steering simultaneously with two fingers. Confirm sounds stop on tab exit and aviation boost works with Space and the touch button. Actual visual layout, audible quality, Safari fullscreen behavior and touch interaction remain unverified in this environment.
+
+## Fighter Command checks (6 October 2026)
+
+Automated regression tests cover runway liftoff and overrun, throttle holding, stalls, cannon cooldown, kills, invulnerability, fatal damage, combat-to-approach transition, runway and carrier touchdown limits, missed approaches, reachable approaches from maximum altitude, rollout, eight-mission progression, score preservation, win/restart, visibility controls, public routing and sitemap exclusion. The shared DOM adapter also initializes, resizes, starts, pauses, resumes and restarts the new controller.
+
+Real browser visual, audio and touch checks remain required. Verify simultaneous throttle/climb and descend/brake inputs, desktop Space and touch FIRE, full-screen entry/exit, pause on blur, local best and mute persistence. Play every mission through combat and landing, including a late carrier touchdown and a stall. Confirm the automatic landing gear and instrument instructions are clear at phone widths. This release does not claim real-device or audible playback verification.

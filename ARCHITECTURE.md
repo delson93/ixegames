@@ -16,6 +16,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | src/views.js | Escaped HTML templates, public layout, admin form, advertising slots |
 | public/engine.js | Pure Snake and Tank simulation functions; accepts injectable randomness |
 | public/racing.js | Ten-stage car/bike racing simulation, progression and road/car rendering |
+| public/fighter.js | Eight-mission fighter simulation, combat, runway/carrier landings and side-view renderer |
 | public/audio.js | Gesture-unlocked Web Audio effects, engine tone, mute persistence and cleanup |
 | public/games.js | Animation loop, canvas rendering, keyboard/touch controls, pause state and local bests |
 | public/app.js | Catalogue filters, saved-score clearing, consent-provider loading and ad gating |
@@ -30,7 +31,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | Route | Purpose |
 | --- | --- |
 | / | Searchable/filterable game collection and FAQ |
-| /games/tank, /games/snake, /games/racing, /games/bike, /games/aviation | Canvas game plus server-rendered instructions; 404 when disabled |
+| /games/tank, /games/snake, /games/racing, /games/bike, /games/aviation, /games/fighter | Canvas game plus server-rendered instructions; 404 when disabled |
 | /about, /contact | Operator information and contact guidance |
 | /privacy, /terms, /cookies, /accessibility | Policy and accessibility pages |
 | /admin | Sign-in or protected dashboard; no-store and noindex |
@@ -80,3 +81,7 @@ Velocity Rider reuses the racing engine with `mode: bike`, a narrow motorcycle, 
 `public/aviation.js` contains the pure flight state, six mission configurations, collision rules and jet renderer. Sky Blitz scrolls at 340 to 565 logical pixels/second, with a 1.45 boost multiplier. Players collect mission-specific ring targets while avoiding storm cells. Missing a ring does not fail the mission. Damage grants brief invulnerability; completing a mission repairs one hull point on continuation.
 
 The canvas retains a 720×540 simulation coordinate system but ResizeObserver resizes its drawing buffer to match the actual displayed size, with devicePixelRatio capped at two. A transform maps logical coordinates to the display buffer. CSS removes the old 720/820px display limits. Native full screen uses the available viewport with controls visible; unsupported requests fall back to a fixed full-viewport theater panel. Escape or the exit button closes the fallback. Aspect ratio is preserved to avoid distorting physics or sprites. Versioned stylesheet and game-module URLs prevent mixing old cached clients with this release.
+
+## Fighter Command
+
+See [FIGHTER.md](FIGHTER.md) for state transitions, units, landing limits, controls, scoring and extension points. Fighter visibility defaults to enabled for older saved settings; administrators can disable it independently. The existing catalogue, SEO, sitemap, advertising and local-score pathways also serve this game.
