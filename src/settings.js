@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile, rename } from 'node:fs/promises';
 import path from 'node:path';
-export const defaults = {siteName:'ixegames',tagline:'Small breaks. Big plays.',contactEmail:'',operatorName:'',announcement:'Seven games. A whole arcade on the way.',tankEnabled:true,snakeEnabled:true,racingEnabled:true,bikeEnabled:true,aviationEnabled:true,fighterEnabled:true,prismEnabled:true,adsEnabled:false,publisherId:'',topSlot:'',bottomSlot:'',cmpReady:false,topImage:'',topLink:'',topAlt:'',bottomImage:'',bottomLink:'',bottomAlt:''};
+export const defaults = {siteName:'UPgames',tagline:'Small breaks. Big plays.',contactEmail:'',operatorName:'',announcement:'Seven games. A whole arcade on the way.',tankEnabled:true,snakeEnabled:true,racingEnabled:true,bikeEnabled:true,aviationEnabled:true,fighterEnabled:true,prismEnabled:true,adsEnabled:false,publisherId:'',topSlot:'',bottomSlot:'',cmpReady:false,topImage:'',topLink:'',topAlt:'',bottomImage:'',bottomLink:'',bottomAlt:''};
 export function validate(input) {
  const out={};
  for(const [key,value] of Object.entries(defaults)) { if(typeof value==='boolean') out[key]=input[key]===true || input[key]==='on'; else out[key]=String(input[key]??'').trim().slice(0,key==='announcement'?200:500); }
@@ -13,5 +13,5 @@ export function validate(input) {
  if(out.adsEnabled&&(!out.publisherId||!out.cmpReady||(!out.topSlot&&!out.bottomSlot)))throw Error('AdSense requires a publisher ID, an ad slot, and certified CMP confirmation.');
  return out;
 }
-export async function loadSettings(dir) {try{return {...defaults,...JSON.parse(await readFile(path.join(dir,'settings.json'),'utf8'))};}catch(e){if(e.code==='ENOENT')return {...defaults};throw e;}}
+export async function loadSettings(dir) {try{const saved=JSON.parse(await readFile(path.join(dir,'settings.json'),'utf8'));if(saved.siteName==='ixegames')saved.siteName='UPgames';return {...defaults,...saved};}catch(e){if(e.code==='ENOENT')return {...defaults};throw e;}}
 export async function saveSettings(dir,settings){await mkdir(dir,{recursive:true});const tmp=path.join(dir,`settings-${crypto.randomUUID()}.tmp`);await writeFile(tmp,JSON.stringify(settings,null,2),{mode:0o600});await rename(tmp,path.join(dir,'settings.json'));}

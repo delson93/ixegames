@@ -2,7 +2,7 @@
 
 ## Completed automated checks
 
-`npm run check` validates JavaScript syntax. `npm test` runs 46 tests covering:
+`npm run check` validates JavaScript syntax. `npm test` runs 48 tests covering:
 
 - Snake reversal and turn buffering, growth, food placement, wall/body collision, vacated tail movement and full-board win.
 - Tank movement barriers, firing cooldowns, enemy score, wave progression, brick/steel collision, armor damage and invulnerability.
@@ -68,3 +68,7 @@ Real browser visual, audio and touch checks remain required. Verify simultaneous
 Automated coverage includes bag contents, independent boards, boundaries, rotation and obstruction, row collapse, multi-row scoring, combos, level progression, ghost/hard drop agreement, held input behavior, lock delay, spawn top-out, freeze after loss, admin visibility and public routes. The shared controller smoke test also covers Prism Stack.
 
 Real-browser visual/touch/audio checks remain pending: play with arrows and Space, then touch rotate and DROP; hold left/right and soft drop, check simultaneous inputs and canceled pointers, pause/resume, blur, restart, fullscreen and mute persistence. Inspect board, previews and controls at phone, tablet and desktop widths.
+
+## UPgames deployment regression checks
+
+All eight JS assets are requested through the actual HTTP server with versioned query strings using GET and HEAD; tests require 200, JavaScript MIME and revalidation. Unknown modules return a plain-text 404. The controller smoke test additionally runs bike from a copied module directory with prism.js deliberately removed. Branding tests cover legacy settings migration, preserving custom names/operator details, and new-domain canonicals. Live reverse-proxy responses and real-browser checks remain unverified.

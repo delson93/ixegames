@@ -1,4 +1,4 @@
-# Deploying ixegames
+# Deploying UPgames
 
 ## Single Node process
 
@@ -52,14 +52,14 @@ Adjust paths, Node binary and service user for the host. The working directory m
 
 ```ini
 [Unit]
-Description=ixegames browser arcade
+Description=UPgames browser arcade
 After=network.target
 
 [Service]
 Type=simple
-User=ixegames
-WorkingDirectory=/srv/ixegames
-ExecStart=/usr/bin/node --env-file=/srv/ixegames/.env /srv/ixegames/server.js
+User=upgames
+WorkingDirectory=/srv/upgames
+ExecStart=/usr/bin/node --env-file=/srv/upgames/.env /srv/upgames/server.js
 Restart=on-failure
 RestartSec=3
 NoNewPrivileges=true
@@ -80,7 +80,7 @@ For multiple replicas, replace in-memory sessions and JSON settings with shared 
 
 ## Domain and search launch
 
-- Connect ixegames.com and configure HTTPS before changing SITE_URL to that origin.
+- Connect games.upilinks.in and configure HTTPS before changing SITE_URL to that origin.
 - Confirm canonical tags and `/sitemap.xml` use the production origin.
 - Verify Search Console ownership and submit the sitemap.
 - Inspect a public game page with Google's URL inspection and structured-data tools.
@@ -88,4 +88,23 @@ For multiple replicas, replace in-memory sessions and JSON settings with shared 
 
 ## Accessing the administrator dashboard
 
-Navigate to `/admin` on the deployed origin. For example, after your domain is connected, the path is `https://ixegames.com/admin`. No default password is provided. Generate your password hash with `node scripts/password.mjs` from the project directory, copy the generated ADMIN_PASSWORD_HASH line into `.env`, and restart the existing Node process through your hosting platform. Use the plain password you chose to sign in. Do not start a second process on the same port. If POST requests show Invalid request origin, make SITE_URL match the exact HTTPS hostname being used and restart.
+Navigate to `/admin` on the deployed origin. For example, after your domain is connected, the path is `https://games.upilinks.in/admin`. No default password is provided. Generate your password hash with `node scripts/password.mjs` from the project directory, copy the generated ADMIN_PASSWORD_HASH line into `.env`, and restart the existing Node process through your hosting platform. Use the plain password you chose to sign in. Do not start a second process on the same port. If POST requests show Invalid request origin, make SITE_URL match the exact HTTPS hostname being used and restart.
+
+## Cloudways deployment and custom domain
+
+Production origin: `https://games.upilinks.in`. Keep the existing server directory and PM2 name `node-app`; the GitHub repository remains `delson93/ixegames`. Set SITE_URL in `.env` and also update PM2's saved environment, because inherited variables override the env file. Never replace `.env` with an example containing an empty password hash.
+
+After pulling the complete release and passing checks, run as root:
+
+```bash
+sed -i 's|^SITE_URL=.*|SITE_URL=https://games.upilinks.in|' .env
+sed -i 's|^COOKIE_SECURE=.*|COOKIE_SECURE=true|' .env
+sudo -H -u xbvmrtfkgx env SITE_URL=https://games.upilinks.in COOKIE_SECURE=true pm2 restart node-app --update-env
+sudo -H -u xbvmrtfkgx pm2 save
+curl -I 'http://127.0.0.1:3000/prism.js?v=20261007-upgames'
+curl -I 'https://games.upilinks.in/prism.js?v=20261007-upgames'
+```
+
+Both module responses must be 200 with `Content-Type: text/javascript`. If local Node is correct but the public response is HTML, inspect the reverse proxy/CDN: forward root-level `.js` requests to this Node app and purge stale errors. Do not relabel HTML as JavaScript or remove `nosniff`. Node holds the asset allowlist in memory, so pulling files without restarting an older server can cause a new module URL to return an HTML 404.
+
+Each game now imports only its own engine; a missing Prism module cannot stop the bike controller. JS responses revalidate rather than remaining fresh for an hour. Unknown JS paths return plain-text 404 responses. Old default `ixegames` settings migrate to UPgames in memory and persist on the next admin save. Custom site names and operator settings are retained. Scores are origin-local and do not transfer from the old hostname automatically.

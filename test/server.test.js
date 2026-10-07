@@ -14,3 +14,15 @@ test('public pages render HTML, descriptions, canonicals and no ad scripts by de
 test('admin requires authentication and same-origin requests',async()=>{assert.equal((await post('/admin/settings',{})).status,401);assert.equal((await post('/admin/login',{password},{origin:'https://evil.example'})).status,403);assert.equal((await post('/admin/login',{password:'wrong'})).status,401);const r=await post('/admin/login',{password});assert.equal(r.status,303);cookie=r.headers.get('set-cookie').split(';')[0];assert.match(r.headers.get('set-cookie'),/HttpOnly/);const dashboard=await fetch(base+'/admin',{headers:{cookie}});assert.equal(dashboard.headers.get('cache-control'),'no-store');const html=await dashboard.text();csrf=html.match(/name="csrf" value="([a-f0-9]+)"/)[1];assert.ok(csrf);});
 test('admin CSRF protection, persistence, escaping, visibility and logout',async()=>{assert.equal((await post('/admin/settings',{csrf:'bad'})).status,403);const r=await post('/admin/settings',{csrf,siteName:'<script>alert(1)</script>',contactEmail:'hello@example.com',snakeEnabled:'on',announcement:'More games soon'});assert.equal(r.status,303);const html=await fetch(base+'/').then(r=>r.text());assert.match(html,/&lt;script&gt;alert/);assert.doesNotMatch(html,/<script>alert/);assert.equal((await fetch(base+'/games/tank')).status,404);assert.equal((await fetch(base+'/games/racing')).status,404);assert.equal((await fetch(base+'/games/bike')).status,404);assert.equal((await fetch(base+'/games/aviation')).status,404);assert.equal((await fetch(base+'/games/fighter')).status,404);assert.equal((await fetch(base+'/games/prism')).status,404);const sitemap=await fetch(base+'/sitemap.xml').then(r=>r.text());assert.doesNotMatch(sitemap,/games\/prism/);assert.doesNotMatch(sitemap,/games\/fighter/);assert.doesNotMatch(sitemap,/games\/tank/);assert.doesNotMatch(sitemap,/games\/racing/);const persisted=JSON.parse(await (await import('node:fs/promises')).readFile(path.join(dir,'settings.json'),'utf8'));assert.equal(persisted.tankEnabled,false);assert.equal(persisted.snakeEnabled,true);assert.equal((await post('/admin/logout',{csrf})).status,303);assert.equal((await post('/admin/settings',{csrf})).status,401);});
 test('password attempts are rate limited',async()=>{for(let i=0;i<5;i++)assert.equal((await post('/admin/login',{password:'wrong'})).status,401);assert.equal((await post('/admin/login',{password})).status,429);});
+
+test('all browser modules including versioned URLs have JavaScript MIME types',async()=>{
+ for(const name of ['app','games','engine','audio','racing','aviation','fighter','prism']){
+  for(const method of ['GET','HEAD']){
+   const r=await fetch(`${base}/${name}.js?v=20261007-upgames`,{method});
+   assert.equal(r.status,200,name);assert.match(r.headers.get('content-type'),/^text\/javascript/);
+   assert.equal(r.headers.get('cache-control'),'no-cache');
+   if(method==='GET')assert.doesNotMatch(await r.text(),/^\s*<!doctype html/i);
+  }
+ }
+ const r=await fetch(base+'/missing.js?v=1');assert.equal(r.status,404);assert.match(r.headers.get('content-type'),/^text\/plain/);
+});

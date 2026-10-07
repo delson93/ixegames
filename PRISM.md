@@ -1,6 +1,6 @@
 # Prism Stack: maintainer and AI guide
 
-An original falling-block puzzle at `/games/prism`, implemented without runtime dependencies. The 12 × 18 board, crystal palette and eight-shape bag include seven four-cell shapes plus a three-cell corner. Code, artwork and synthesized sounds are local to ixegames.
+An original falling-block puzzle at `/games/prism`, implemented without runtime dependencies. The 12 × 18 board, crystal palette and eight-shape bag include seven four-cell shapes plus a three-cell corner. Code, artwork and synthesized sounds are local to UPgames.
 
 ## Files and integration
 

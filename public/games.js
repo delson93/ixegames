@@ -1,11 +1,18 @@
-import {createPrism,stepPrism,drawPrism} from './prism.js?v=20261007';
-import {createFighter,nextFighterLevel,stepFighter,drawFighter,fighterLevels,fighterStatus} from './fighter.js?v=20261006';
-import {createSnake,turnSnake,stepSnake,createTank,spawnWave,stepTank,vectors} from './engine.js?v=20260926';
-import {createRace,nextRaceLevel,stepRace,drawRace,raceLevels} from './racing.js?v=20260926';
-import {createFlight,nextFlightLevel,stepFlight,drawFlight,flightLevels} from './aviation.js?v=20260926';
-import {ArcadeAudio} from './audio.js?v=20260926';
-const sound=new ArcadeAudio();
+import {ArcadeAudio} from './audio.js?v=20261007-upgames';
 const $=s=>document.querySelector(s),canvas=$('#game'),ctx=canvas.getContext('2d'),type=$('.game-shell').dataset.game;
+// Load only the active game's engine. A missing new game must not break others.
+const modules={tank:'./engine.js?v=20261007-upgames',snake:'./engine.js?v=20261007-upgames',racing:'./racing.js?v=20261007-upgames',bike:'./racing.js?v=20261007-upgames',aviation:'./aviation.js?v=20261007-upgames',fighter:'./fighter.js?v=20261007-upgames',prism:'./prism.js?v=20261007-upgames'};
+let engine;
+try {engine=await import(modules[type]);}
+catch(error){
+ $('#overlay-title').textContent='Game could not load';
+ $('#overlay-copy').textContent='Reload this page. If this continues, the server needs the latest game files and an application restart.';
+ $('#game-status').textContent='Game module unavailable. Please reload after the deployment finishes.';
+ $('#start').disabled=true;
+ throw error;
+}
+const {createPrism,stepPrism,drawPrism,createFighter,nextFighterLevel,stepFighter,drawFighter,fighterLevels,fighterStatus,createSnake,turnSnake,stepSnake,createTank,spawnWave,stepTank,vectors,createRace,nextRaceLevel,stepRace,drawRace,raceLevels,createFlight,nextFlightLevel,stepFlight,drawFlight,flightLevels}=engine;
+const sound=new ArcadeAudio();
 const roadGame=['racing','bike'].includes(type), stagedGame=roadGame||['aviation','fighter'].includes(type);
 const stages=()=>type==='fighter'?fighterLevels:type==='aviation'?flightLevels:raceLevels;
 let state,running=false,paused=false,last=0,acc=0,best=0,keys=new Set(),touchDir=null,touchFire=false,touchKeys=new Set();

@@ -1,4 +1,4 @@
-# ixegames
+# UPgames
 
 An original, responsive browser arcade built on Node.js. Seven games: **Tank Arena**, **Neon Snake**, **Neon Rush**, **Velocity Rider**, **Sky Blitz**, **Fighter Command**, and **Prism Stack**. Players do not need accounts. The design uses dark surfaces, lavender accents, custom SVG illustrations, and accessible keyboard focus states.
 
@@ -41,7 +41,7 @@ npm test       # Rules, routing, admin security and persistence tests
 
 ## Before publishing
 
-Set `SITE_URL=https://ixegames.com` only when that domain is connected. Until then use your actual public origin. Configure HTTPS, `COOKIE_SECURE=true`, `NODE_ENV=production`, administrator credentials, persistent writable storage, and a reverse proxy. Complete your operator name and real contact email in Admin. Review the policy text against your actual hosting, business, jurisdiction, retention, and advertising practices.
+Set `SITE_URL=https://games.upilinks.in` only when that domain is connected. Until then use your actual public origin. Configure HTTPS, `COOKIE_SECURE=true`, `NODE_ENV=production`, administrator credentials, persistent writable storage, and a reverse proxy. Complete your operator name and real contact email in Admin. Review the policy text against your actual hosting, business, jurisdiction, retention, and advertising practices.
 
 Google advertising is **off by default**. The website provides integration support but cannot guarantee AdSense approval, search rankings, or legal compliance. Google reviews the live site and publisher account. See [ADSENSE.md](ADSENSE.md) before enabling ads.
 

@@ -27,18 +27,19 @@ export const server=http.createServer(async(req,res)=>{
  if(secure)res.setHeader('Strict-Transport-Security','max-age=31536000; includeSubDomains');
  const send=(status,body,type='text/html; charset=utf-8')=>{res.writeHead(status,{'Content-Type':type});res.end(req.method==='HEAD'?'':body);};
  const redirect=to=>{res.writeHead(303,{Location:to});res.end();};
- const page=(title,body,status=200,opts={})=>send(status,layout(settings,{title,description:opts.description||`${title}. Free browser games, useful guides, and information from ixegames.`,path:p,origin,body,...opts}));
+ const page=(title,body,status=200,opts={})=>send(status,layout(settings,{title,description:opts.description||`${title}. Free browser games, useful guides, and information from UPgames.`,path:p,origin,body,...opts}));
  try{
  if(p.startsWith('/admin')){res.setHeader('Cache-Control','no-store');res.setHeader('X-Robots-Tag','noindex, nofollow');}
  else res.setHeader('Cache-Control','no-cache');
  if(req.method==='GET'||req.method==='HEAD'){
- if(files.has(p.slice(1))){res.setHeader('Cache-Control','public, max-age=3600');return send(200,await readFile(path.join(root,'public',p.slice(1))),types[path.extname(p)]);}
+ if(files.has(p.slice(1))){const extension=path.extname(p);res.setHeader('Cache-Control',extension==='.js'?'no-cache':'public, max-age=3600');return send(200,await readFile(path.join(root,'public',p.slice(1))),types[extension]);}
+ if(p.endsWith('.js'))return send(404,'JavaScript asset not found. Deploy the complete release and restart the application.','text/plain; charset=utf-8');
  if(p==='/healthz')return send(200,'ok','text/plain');
  if(p==='/robots.txt')return send(200,`User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${origin}/sitemap.xml\n`,'text/plain');
  if(p==='/ads.txt')return send(200,settings.publisherId?`google.com, ${settings.publisherId.replace('ca-','')}, DIRECT, f08c47fec0942fa0\n`:'# No authorized Google seller configured.\n','text/plain');
  if(p==='/sitemap.xml'){const paths=['/','/about','/contact','/privacy','/terms','/cookies','/accessibility',...activeGames(settings).map(g=>'/games/'+g.id)];return send(200,`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(x=>`<url><loc>${esc(origin+x)}</loc></url>`).join('')}</urlset>`,'application/xml');}
  if(p==='/api/ad-config')return send(200,JSON.stringify({enabled:settings.adsEnabled,publisherId:settings.publisherId,cmpUrl:settings.adsEnabled?process.env.CMP_SCRIPT_URL||'':''}),'application/json');
- if(p==='/')return page('Free online arcade games',home(settings),200,{ads:true,description:'Play tank, snake, car racing, bike racing, aviation, fighter jet and block puzzle games free on ixegames. Instant browser games with keyboard and touch controls. No downloads or player accounts.'});
+ if(p==='/')return page('Free online arcade games',home(settings),200,{ads:true,description:'Play tank, snake, car racing, bike racing, aviation, fighter jet and block puzzle games free on UPgames. Instant browser games with keyboard and touch controls. No downloads or player accounts.'});
  const g=activeGames(settings).find(g=>p==='/games/'+g.id);if(g)return page(`${g.name} - Play free online`,gamePage(g),200,{game:true,ads:true,description:g.description});
  const content=contentPage(settings,p);if(content)return page(content.title,content.body);
  }
@@ -47,7 +48,7 @@ export const server=http.createServer(async(req,res)=>{
  if(p==='/admin'&&(req.method==='GET'||req.method==='HEAD')){
  if(authenticated)return page('Admin dashboard',adminPage(settings,session.csrf,url.searchParams.has('saved')?'Settings saved successfully.':''),200,{noindex:true});
  const configured=!!process.env.ADMIN_PASSWORD_HASH;
- return page('Admin sign in',`<section class="login"><span class="eyebrow purple-text">IXEGAMES / CONTROL ROOM</span><h1>Welcome back.</h1><p>${configured?'Sign in to manage your arcade.':'Administrator access is locked. Set ADMIN_PASSWORD_HASH on the server to enable sign-in.'}</p>${configured?'<form method="post" action="/admin/login"><label>Administrator password<input type="password" name="password" required autocomplete="current-password" maxlength="256"></label><button class="button">Sign in ↗</button></form>':''}</section>`,200,{noindex:true});
+ return page('Admin sign in',`<section class="login"><span class="eyebrow purple-text">UPGAMES / CONTROL ROOM</span><h1>Welcome back.</h1><p>${configured?'Sign in to manage your arcade.':'Administrator access is locked. Set ADMIN_PASSWORD_HASH on the server to enable sign-in.'}</p>${configured?'<form method="post" action="/admin/login"><label>Administrator password<input type="password" name="password" required autocomplete="current-password" maxlength="256"></label><button class="button">Sign in ↗</button></form>':''}</section>`,200,{noindex:true});
  }
  if(req.method==='POST'&&p.startsWith('/admin/')){
  if(req.headers.origin!==origin)return send(403,'Invalid request origin','text/plain');
@@ -68,4 +69,4 @@ export const server=http.createServer(async(req,res)=>{
  return page('Page not found','<section class="prose"><span class="eyebrow purple-text">404 / OUT OF BOUNDS</span><h1>This level does not exist.</h1><p>Let’s get you back to something playable.</p><a class="button" href="/">Back to the arcade ↗</a></section>',404,{noindex:true});
  }catch(e){console.error(e.message);return send(e.status||500,'Unable to complete request. Please try again.','text/plain');}
 });
-if(process.argv[1]===fileURLToPath(import.meta.url))server.listen(Number(process.env.PORT||3000),process.env.HOST||'0.0.0.0',()=>console.log(`ixegames running at ${origin}`));
+if(process.argv[1]===fileURLToPath(import.meta.url))server.listen(Number(process.env.PORT||3000),process.env.HOST||'0.0.0.0',()=>console.log(`UPgames running at ${origin}`));

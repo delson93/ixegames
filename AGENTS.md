@@ -4,7 +4,7 @@ Read README.md, ARCHITECTURE.md, ADSENSE.md, and QA.md before making changes.
 
 ## Product rules
 
-- Brand: ixegames. Intended future domain: ixegames.com. SITE_URL controls the actual deployment origin.
+- Brand: UPgames. Production domain: games.upilinks.in. SITE_URL controls the actual deployment origin.
 - Free public games; never add player login requirements without an explicit request.
 - Only publish games that are actually playable. Tank Arena, Neon Snake, Neon Rush, Velocity Rider, Sky Blitz, Fighter Command, and Prism Stack are the current collection.
 - Retain the modern dark/lavender design and responsive keyboard/touch controls.
