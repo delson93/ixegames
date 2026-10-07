@@ -2,7 +2,7 @@
 
 ## Completed automated checks
 
-`npm run check` validates JavaScript syntax. `npm test` runs 53 tests covering:
+`npm run check` validates JavaScript syntax. `npm test` runs 54 tests covering:
 
 - Snake reversal and turn buffering, growth, food placement, wall/body collision, vacated tail movement and full-board win.
 - Tank movement barriers, firing cooldowns, enemy score, wave progression, brick/steel collision, armor damage and invulnerability.

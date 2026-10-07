@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {randomBytes,scryptSync,timingSafeEqual} from 'node:crypto';
 import {loadSettings,saveSettings,validate} from './src/settings.js';
 import {layout,home,gamePage,adminPage,contentPage,activeGames,esc} from './src/views.js';
+import {acceptedRequestOrigins} from './src/origin.js';
 const root=path.dirname(fileURLToPath(import.meta.url));
 const dataDir=path.resolve(process.env.DATA_DIR||path.join(root,'data'));
 const origin=new URL(process.env.SITE_URL||'http://localhost:3000').origin;
@@ -51,7 +52,7 @@ export const server=http.createServer(async(req,res)=>{
  return page('Admin sign in',`<section class="login"><span class="eyebrow purple-text">UPGAMES / CONTROL ROOM</span><h1>Welcome back.</h1><p>${configured?'Sign in to manage your arcade.':'Administrator access is locked. Set ADMIN_PASSWORD_HASH on the server to enable sign-in.'}</p>${configured?'<form method="post" action="/admin/login"><label>Administrator password<input type="password" name="password" required autocomplete="current-password" maxlength="256"></label><button class="button">Sign in ↗</button></form>':''}</section>`,200,{noindex:true});
  }
  if(req.method==='POST'&&p.startsWith('/admin/')){
- if(req.headers.origin!==origin)return send(403,'Invalid request origin','text/plain');
+ if(!acceptedRequestOrigins(req,origin).has(req.headers.origin))return send(403,'Invalid request origin','text/plain');
  if(!req.headers['content-type']?.startsWith('application/x-www-form-urlencoded'))return send(415,'Unsupported content type','text/plain');
  const data=await form(req);
  if(p==='/admin/login'){
