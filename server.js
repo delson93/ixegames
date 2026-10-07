@@ -38,7 +38,7 @@ export const server=http.createServer(async(req,res)=>{
  if(p==='/robots.txt')return send(200,`User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ${origin}/sitemap.xml\n`,'text/plain');
  if(p==='/ads.txt')return send(200,settings.publisherId?`google.com, ${settings.publisherId.replace('ca-','')}, DIRECT, f08c47fec0942fa0\n`:'# No authorized Google seller configured.\n','text/plain');
  if(p==='/sitemap.xml'){const paths=['/','/about','/contact','/privacy','/terms','/cookies','/accessibility',...activeGames(settings).map(g=>'/games/'+g.id)];return send(200,`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(x=>`<url><loc>${esc(origin+x)}</loc></url>`).join('')}</urlset>`,'application/xml');}
- if(p==='/api/ad-config')return send(200,JSON.stringify({enabled:settings.adsEnabled,publisherId:settings.publisherId,cmpUrl:settings.adsEnabled?process.env.CMP_SCRIPT_URL||'':''}),'application/json');
+ if(p==='/api/ad-config')return send(200,JSON.stringify({enabled:settings.adsEnabled,googleCmp:settings.googleCmp,publisherId:settings.publisherId,cmpUrl:settings.adsEnabled?process.env.CMP_SCRIPT_URL||'':''}),'application/json');
  if(p==='/')return page('Free online arcade games',home(settings),200,{ads:true,description:'Play tank, snake, car racing, bike racing, aviation, fighter jet and block puzzle games free on UPgames. Instant browser games with keyboard and touch controls. No downloads or player accounts.'});
  const g=activeGames(settings).find(g=>p==='/games/'+g.id);if(g)return page(`${g.name} - Play free online`,gamePage(g),200,{game:true,ads:true,description:g.description});
  const content=contentPage(settings,p);if(content)return page(content.title,content.body);
@@ -63,7 +63,7 @@ export const server=http.createServer(async(req,res)=>{
  if(!authenticated)return send(401,'Sign in required','text/plain');
  if(data.csrf!==session.csrf)return send(403,'Invalid CSRF token','text/plain');
  if(p==='/admin/logout'){sessions.delete(token);res.setHeader('Set-Cookie',cookie('',0));return redirect('/admin');}
- if(p==='/admin/settings'){try{const next=validate(data);if(next.adsEnabled&&!process.env.CMP_SCRIPT_URL)throw Error('Set CMP_SCRIPT_URL before enabling Google ads.');await saveSettings(dataDir,next);settings=next;return redirect('/admin?saved=1');}catch(e){return page('Admin dashboard',adminPage({...settings,...data},session.csrf,e.message),400,{noindex:true});}}
+ if(p==='/admin/settings'){try{const next=validate(data);if(next.adsEnabled&&!next.googleCmp&&!process.env.CMP_SCRIPT_URL)throw Error('Set CMP_SCRIPT_URL before enabling Google ads.');await saveSettings(dataDir,next);settings=next;return redirect('/admin?saved=1');}catch(e){return page('Admin dashboard',adminPage({...settings,...data},session.csrf,e.message),400,{noindex:true});}}
  }
  if(!['GET','HEAD','POST'].includes(req.method))return send(405,'Method not allowed','text/plain');
  return page('Page not found','<section class="prose"><span class="eyebrow purple-text">404 / OUT OF BOUNDS</span><h1>This level does not exist.</h1><p>Let’s get you back to something playable.</p><a class="button" href="/">Back to the arcade ↗</a></section>',404,{noindex:true});

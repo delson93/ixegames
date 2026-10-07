@@ -55,7 +55,7 @@ Browser best scores use `ixe-best-<game>-<difficulty>` keys. Storage failures de
 
 ## Advertising
 
-Top/bottom custom sponsor banners take priority over the corresponding Google slot. Templates render slots only on the homepage and game pages. `public/app.js` loads a configured certified CMP first, subscribes to TCF events, and inserts Google's script only after a supported consent state. Missing, failed, pending or denied consent leaves Google slots unfilled. Consent withdrawal after ad loading reloads the page to remove loaded ad resources. Policy pages disclose optional advertising and image-host requests.
+Top/bottom custom sponsor banners take priority over the corresponding Google slot. Templates render slots only on the homepage and game pages. `public/app.js` subscribes to TCF events and permits ad requests only after a supported consent state. Google mode loads the AdSense tag with requests paused to bootstrap its published message. External mode loads the configured CMP first and inserts Google's tag after consent. Missing, failed, pending or denied consent leaves Google slots unfilled. Consent withdrawal after ad loading reloads the page to remove loaded ad resources. Policy pages disclose optional advertising and image-host requests.
 
 A provider-specific consent UI adapter may be needed; see ADSENSE.md. The generic integration does not make UPgames a CMP.
 
@@ -94,3 +94,5 @@ See [PRISM.md](PRISM.md) for the puzzle engine and input rules. `prismEnabled` d
 ## Isolated game loading
 
 The shared controller dynamically imports only the selected game engine. Missing modules show a deployment/reload message. JavaScript assets are served with `text/javascript` and `no-cache`; unknown JS paths return a plain-text 404. Restart the Node process after pulling assets or routes, and update PM2 environment overrides when changing SITE_URL.
+
+Google Privacy & messaging is an explicit `googleCmp` boolean option (default false). Its paused AdSense bootstrap replaces the separate loader only when selected. The TCF listener gates slot requests; see ADSENSE.md.
