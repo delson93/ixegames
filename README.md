@@ -1,6 +1,6 @@
 # ixegames
 
-An original, responsive browser arcade built on Node.js. Six games: **Tank Arena**, **Neon Snake**, **Neon Rush**, **Velocity Rider**, **Sky Blitz**, and **Fighter Command**. Players do not need accounts. The design uses dark surfaces, lavender accents, custom SVG illustrations, and accessible keyboard focus states.
+An original, responsive browser arcade built on Node.js. Seven games: **Tank Arena**, **Neon Snake**, **Neon Rush**, **Velocity Rider**, **Sky Blitz**, **Fighter Command**, and **Prism Stack**. Players do not need accounts. The design uses dark surfaces, lavender accents, custom SVG illustrations, and accessible keyboard focus states.
 
 ## Quick start
 
@@ -23,6 +23,7 @@ npm test       # Rules, routing, admin security and persistence tests
 
 ## Included
 
+- Prism Stack: falling crystal blocks, eight shapes, a landing guide, three-piece preview, row clears, combos and rising speed.
 - Tank Arena: enemy waves, brick and steel cover, firing cooldowns, armor, and local high scores.
 - Neon Snake: three difficulty settings, food, growth, wall/body collision, and separate local high scores.
 - Neon Rush: ten faster racing stages with increasing speed and traffic, acceleration/braking, condition damage, finish-line bonuses, and a championship win.

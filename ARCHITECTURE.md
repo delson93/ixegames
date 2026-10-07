@@ -16,6 +16,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | src/views.js | Escaped HTML templates, public layout, admin form, advertising slots |
 | public/engine.js | Pure Snake and Tank simulation functions; accepts injectable randomness |
 | public/racing.js | Ten-stage car/bike racing simulation, progression and road/car rendering |
+| public/prism.js | Falling-block puzzle simulation, bag randomization, rotation, row clearing and renderer |
 | public/fighter.js | Eight-mission fighter simulation, combat, runway/carrier landings and side-view renderer |
 | public/audio.js | Gesture-unlocked Web Audio effects, engine tone, mute persistence and cleanup |
 | public/games.js | Animation loop, canvas rendering, keyboard/touch controls, pause state and local bests |
@@ -31,7 +32,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | Route | Purpose |
 | --- | --- |
 | / | Searchable/filterable game collection and FAQ |
-| /games/tank, /games/snake, /games/racing, /games/bike, /games/aviation, /games/fighter | Canvas game plus server-rendered instructions; 404 when disabled |
+| /games/tank, /games/snake, /games/racing, /games/bike, /games/aviation, /games/fighter, /games/prism | Canvas game plus server-rendered instructions; 404 when disabled |
 | /about, /contact | Operator information and contact guidance |
 | /privacy, /terms, /cookies, /accessibility | Policy and accessibility pages |
 | /admin | Sign-in or protected dashboard; no-store and noindex |
@@ -85,3 +86,7 @@ The canvas retains a 720×540 simulation coordinate system but ResizeObserver re
 ## Fighter Command
 
 See [FIGHTER.md](FIGHTER.md) for state transitions, units, landing limits, controls, scoring and extension points. Fighter visibility defaults to enabled for older saved settings; administrators can disable it independently. The existing catalogue, SEO, sitemap, advertising and local-score pathways also serve this game.
+
+## Prism Stack
+
+See [PRISM.md](PRISM.md) for the puzzle engine and input rules. `prismEnabled` defaults to true for older settings and controls catalogue visibility, routes and sitemap. Shared audio, pause, resizing and local best score behavior remain in the game controller.

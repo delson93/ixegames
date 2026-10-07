@@ -6,7 +6,7 @@ Read README.md, ARCHITECTURE.md, ADSENSE.md, and QA.md before making changes.
 
 - Brand: ixegames. Intended future domain: ixegames.com. SITE_URL controls the actual deployment origin.
 - Free public games; never add player login requirements without an explicit request.
-- Only publish games that are actually playable. Tank Arena, Neon Snake, Neon Rush, Velocity Rider, Sky Blitz, and Fighter Command are the current collection.
+- Only publish games that are actually playable. Tank Arena, Neon Snake, Neon Rush, Velocity Rider, Sky Blitz, Fighter Command, and Prism Stack are the current collection.
 - Retain the modern dark/lavender design and responsive keyboard/touch controls.
 - Preserve original code and artwork. Do not import copyrighted franchise graphics, sounds, levels, or branding.
 - Never promise AdSense approval or guaranteed search rankings.
@@ -47,3 +47,5 @@ The current storage layer assumes one Node.js process and one persistent data di
 - Preserve user-controlled bike throttle: Up accelerates, Down brakes, releasing both holds speed. Keep simulation coordinates independent from responsive canvas resolution.
 
 - Fighter Command uses Right/Left for throttle/braking and Up/Down for altitude. Keep takeoff, combat, landing and rollout distinct. Landing requires a marked surface, safe speed and descent, plus room to stop. See FIGHTER.md before changing flight rules.
+
+- Prism Stack logic lives in public/prism.js. Preserve edge-triggered rotate/drop controls, finite lock-delay resets, independent shuffled bags and row-clear ordering. See PRISM.md.
