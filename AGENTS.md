@@ -13,7 +13,7 @@ Read README.md, ARCHITECTURE.md, ADSENSE.md, and QA.md before making changes.
 
 ## Implementation rules
 
-- Node.js 22+, ESM, no runtime dependencies. Prefer small focused modules and server-rendered content.
+- Node.js 22+, ESM, node-postgres for optional PostgreSQL storage. Prefer small focused modules and server-rendered content.
 - Keep pure simulation logic in public/engine.js, public/racing.js, public/aviation.js and public/fighter.js; shared browser orchestration lives in public/games.js, and synthesized audio lives in public/audio.js.
 - Escape all administrator-controlled content with esc() before HTML output.
 - Never expose ADMIN_PASSWORD_HASH, cookies, CSRF tokens, or .env in client configuration or commits.
@@ -40,7 +40,7 @@ Run `npm run check` and `npm test`. Add meaningful regression tests when changin
 
 ## Operational constraints
 
-The current storage layer assumes one Node.js process and one persistent data directory. Server restart invalidates admin sessions. Multi-instance deployments require shared state and locks. Do not weaken these boundaries to make a deployment appear successful.
+File mode assumes one Node.js process and a persistent data directory. PostgreSQL stores settings and administrator credentials, while sessions and rate limits remain per process; restart invalidates sessions. Multi-instance deployments require shared session and rate-limit state.
 
 - Audio must remain optional, start only after a user gesture, respect the persisted mute preference and stop on pause or page exit. Never add unlicensed recordings.
 

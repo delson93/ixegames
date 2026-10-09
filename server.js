@@ -3,7 +3,8 @@ import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {randomBytes,scryptSync,timingSafeEqual} from 'node:crypto';
-import {loadSettings,saveSettings,validate} from './src/settings.js';
+import {validate} from './src/settings.js';
+import {createStorage} from './src/storage.js';
 import {layout,home,gamePage,adminPage,contentPage,activeGames,esc} from './src/views.js';
 import {acceptedRequestOrigins} from './src/origin.js';
 const root=path.dirname(fileURLToPath(import.meta.url));
@@ -11,8 +12,9 @@ const dataDir=path.resolve(process.env.DATA_DIR||path.join(root,'data'));
 const origin=new URL(process.env.SITE_URL||'http://localhost:3000').origin;
 const secure=process.env.COOKIE_SECURE==='true';
 if(process.env.CMP_SCRIPT_URL && new URL(process.env.CMP_SCRIPT_URL).protocol!=='https:')throw Error('CMP_SCRIPT_URL must use HTTPS.');
-if(process.env.NODE_ENV==='production'&&(!secure||!origin.startsWith('https://')||!process.env.ADMIN_PASSWORD_HASH))throw Error('Production requires HTTPS SITE_URL, COOKIE_SECURE=true and ADMIN_PASSWORD_HASH.');
-let settings=await loadSettings(dataDir);
+if(process.env.NODE_ENV==='production'&&(!secure||!origin.startsWith('https://')||!(process.env.ADMIN_PASSWORD_HASH||process.env.DATABASE_URL||process.env.PGDATABASE)))throw Error('Production requires HTTPS SITE_URL, COOKIE_SECURE=true and an administrator credential or PostgreSQL connection.');
+const storage=await createStorage({dataDir});
+let settings=await storage.loadSettings();
 const sessions=new Map(), attempts=new Map();
 const sessionAge=8*60*60*1000;
 const cleanup=setInterval(()=>{const now=Date.now();for(const [k,v]of sessions)if(v.expires<now)sessions.delete(k);for(const[k,v]of attempts)if(v.until<now)attempts.delete(k);},60000);cleanup.unref();
@@ -47,9 +49,9 @@ export const server=http.createServer(async(req,res)=>{
  const token=(req.headers.cookie||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('ixe_session='))?.slice(12);
  const session=sessions.get(token);const authenticated=session&&session.expires>Date.now();
  if(p==='/admin'&&(req.method==='GET'||req.method==='HEAD')){
- if(authenticated)return page('Admin dashboard',adminPage(settings,session.csrf,url.searchParams.has('saved')?'Settings saved successfully.':''),200,{noindex:true});
- const configured=!!process.env.ADMIN_PASSWORD_HASH;
- return page('Admin sign in',`<section class="login"><span class="eyebrow purple-text">UPGAMES / CONTROL ROOM</span><h1>Welcome back.</h1><p>${configured?'Sign in to manage your arcade.':'Administrator access is locked. Set ADMIN_PASSWORD_HASH on the server to enable sign-in.'}</p>${configured?'<form method="post" action="/admin/login"><label>Administrator password<input type="password" name="password" required autocomplete="current-password" maxlength="256"></label><button class="button">Sign in ↗</button></form>':''}</section>`,200,{noindex:true});
+ if(authenticated)return page('Admin dashboard',adminPage(settings,session.csrf,url.searchParams.has('saved')?'Settings saved successfully.':'',storage.mode==='postgres',(await storage.getAdmin())?.username||'admin'),200,{noindex:true});
+ const account=await storage.getAdmin(),configured=!!account?.password_hash;
+ return page('Admin sign in',`<section class="login"><span class="eyebrow purple-text">UPGAMES / CONTROL ROOM</span><h1>Welcome back.</h1><p>${configured?'Sign in to manage your arcade.':'Administrator access is locked. Configure the database and seed an administrator password hash.'}</p>${configured?'<form method="post" action="/admin/login"><label>Username<input name="username" required autocomplete="username" maxlength="40" value="admin"></label><label>Administrator password<input type="password" name="password" required autocomplete="current-password" maxlength="256"></label><button class="button">Sign in ↗</button></form>':''}</section>`,200,{noindex:true});
  }
  if(req.method==='POST'&&p.startsWith('/admin/')){
  if(!acceptedRequestOrigins(req,origin).has(req.headers.origin))return send(403,'Invalid request origin','text/plain');
@@ -57,14 +59,21 @@ export const server=http.createServer(async(req,res)=>{
  const data=await form(req);
  if(p==='/admin/login'){
  const ip=req.socket.remoteAddress;const a=attempts.get(ip);if(a&&a.until>Date.now()&&a.count>=5)return send(429,'Too many attempts. Try again in 15 minutes.','text/plain');
- if(!process.env.ADMIN_PASSWORD_HASH)return send(503,'Admin not configured','text/plain');
- if(!verifyPassword(String(data.password||'').slice(0,256),process.env.ADMIN_PASSWORD_HASH)){attempts.set(ip,{count:(a?.until>Date.now()?a.count:0)+1,until:Date.now()+900000});return page('Sign in failed','<section class="prose"><h1>Unable to sign in.</h1><p>Check your password and try again.</p><a class="button" href="/admin">Try again</a></section>',401,{noindex:true});}
+ const account=await storage.getAdmin();if(!account?.password_hash)return send(503,'Admin not configured','text/plain');
+ if(String(data.username||'admin')!==account.username||!verifyPassword(String(data.password||'').slice(0,256),account.password_hash)){attempts.set(ip,{count:(a?.until>Date.now()?a.count:0)+1,until:Date.now()+900000});return page('Sign in failed','<section class="prose"><h1>Unable to sign in.</h1><p>Check your credentials and try again.</p><a class="button" href="/admin">Try again</a></section>',401,{noindex:true});}
  attempts.delete(ip);if(token)sessions.delete(token);const id=randomBytes(32).toString('hex');sessions.set(id,{csrf:randomBytes(32).toString('hex'),expires:Date.now()+sessionAge});res.setHeader('Set-Cookie',cookie(id,sessionAge/1000));return redirect('/admin');
  }
  if(!authenticated)return send(401,'Sign in required','text/plain');
  if(data.csrf!==session.csrf)return send(403,'Invalid CSRF token','text/plain');
  if(p==='/admin/logout'){sessions.delete(token);res.setHeader('Set-Cookie',cookie('',0));return redirect('/admin');}
- if(p==='/admin/settings'){try{const next=validate(data);if(next.adsEnabled&&!next.googleCmp&&!process.env.CMP_SCRIPT_URL)throw Error('Set CMP_SCRIPT_URL before enabling Google ads.');await saveSettings(dataDir,next);settings=next;return redirect('/admin?saved=1');}catch(e){return page('Admin dashboard',adminPage({...settings,...data},session.csrf,e.message),400,{noindex:true});}}
+ if(p==='/admin/settings'){try{const next=validate(data);if(next.adsEnabled&&!next.googleCmp&&!process.env.CMP_SCRIPT_URL)throw Error('Set CMP_SCRIPT_URL before enabling Google ads.');await storage.saveSettings(next);settings=next;return redirect('/admin?saved=1');}catch(e){return page('Admin dashboard',adminPage({...settings,...data},session.csrf,e.message,storage.mode==='postgres',(await storage.getAdmin())?.username||'admin'),400,{noindex:true});}}
+ if(p==='/admin/account'&&storage.mode==='postgres'){
+  const account=await storage.getAdmin();
+  const username=String(data.username||'').trim(),newPassword=String(data.newPassword||'');
+  if(!account||!verifyPassword(String(data.currentPassword||''),account.password_hash)||!/^[a-zA-Z0-9_-]{3,40}$/.test(username)||newPassword.length<16||newPassword.length>256)return page('Admin dashboard',adminPage(settings,session.csrf,'Check the current password, username (3–40 letters, digits, _ or -), and new password (16–256 characters).',true,account?.username||'admin'),400,{noindex:true});
+  const salt=randomBytes(16).toString('hex');await storage.updateAdmin(username,`${salt}:${scryptSync(newPassword,salt,64).toString('hex')}`);
+  sessions.clear();res.setHeader('Set-Cookie',cookie('',0));return redirect('/admin');
+ }
  }
  if(!['GET','HEAD','POST'].includes(req.method))return send(405,'Method not allowed','text/plain');
  return page('Page not found','<section class="prose"><span class="eyebrow purple-text">404 / OUT OF BOUNDS</span><h1>This level does not exist.</h1><p>Let’s get you back to something playable.</p><a class="button" href="/">Back to the arcade ↗</a></section>',404,{noindex:true});

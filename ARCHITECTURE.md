@@ -2,7 +2,7 @@
 
 ## Stack and request flow
 
-A dependency-free Node HTTP server generates complete HTML for each page. CSS, SVG illustrations and native JavaScript modules are served from an explicit static allowlist. Browsers run Canvas 2D simulations locally; game scores are never posted to the server.
+A lightweight Node HTTP server generates complete HTML for each page. CSS, SVG illustrations and native JavaScript modules are served from an explicit static allowlist. Browsers run Canvas 2D simulations locally; game scores are never posted to the server.
 
 `request -> server.js route -> src/views.js HTML -> public/app.js / public/games.js`
 
@@ -38,6 +38,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 | /admin | Sign-in or protected dashboard; no-store and noindex |
 | POST /admin/login | Rate-limited authentication |
 | POST /admin/settings | Authenticated and CSRF-protected persistent settings |
+| POST /admin/account | PostgreSQL-backed administrator credential rotation |
 | POST /admin/logout | Revoke session and clear cookie |
 | /api/ad-config | Public publisher/CMP configuration, no credentials |
 | /sitemap.xml, /robots.txt, /ads.txt | Dynamic crawler and publisher endpoints |
@@ -45,7 +46,7 @@ A dependency-free Node HTTP server generates complete HTML for each page. CSS, S
 
 ## State
 
-Settings live in DATA_DIR/settings.json. Writes use a temporary file and rename so readers do not observe partial JSON. A successful admin save replaces the in-process snapshot; restart after editing JSON manually. Back up DATA_DIR separately from the repository.
+When DATABASE_URL or PGDATABASE is configured, settings and the admin username/password hash live in PostgreSQL. On first database initialization, the server imports DATA_DIR/settings.json and seeds the admin hash from ADMIN_PASSWORD_HASH only if the account is absent. Subsequent restarts never overwrite database values. Without PostgreSQL, settings remain in DATA_DIR/settings.json with atomic writes and the admin hash stays in the environment. A successful admin save replaces the in-process snapshot. Back up the database and private environment separately.
 
 Session IDs are 256-bit random values stored in memory, with independent 256-bit CSRF tokens and an eight-hour expiry. Cookies are HTTP-only, SameSite=Strict and limited to /admin. Secure cookies are mandatory in production mode. Login attempts are limited by socket peer IP, not untrusted forwarded headers. Behind a single proxy the default limit is shared by requests through that proxy; add trusted edge limiting if more administrators are needed.
 

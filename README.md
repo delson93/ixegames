@@ -4,10 +4,11 @@ An original, responsive browser arcade built on Node.js. Seven games: **Tank Are
 
 ## Quick start
 
-Requires Node.js 22 or newer. There are **no third-party runtime dependencies** and no build step.
+Requires Node.js 22 or newer. Run `npm install` once; the only runtime package is `pg` for optional PostgreSQL storage. No build step is needed.
 
 ```bash
 cp .env.example .env
+npm install
 node scripts/password.mjs
 # Copy the generated ADMIN_PASSWORD_HASH line into .env.
 npm start
@@ -36,7 +37,7 @@ npm test       # Rules, routing, admin security and persistence tests
 - Server-rendered game pages, original guides, About, Contact, Privacy, Terms, Cookies, Accessibility, and real 404 responses.
 - Canonical URLs, meta descriptions, Open Graph/social PNG, JSON-LD, sitemap, robots.txt, favicon, and dynamic ads.txt.
 - Password-protected admin: site identity, operator/contact details, announcement, game visibility, Google publisher/slot IDs, and independent top/bottom custom banners.
-- Persistent settings written atomically to `data/settings.json`; data and secrets excluded from Git.
+- PostgreSQL storage for settings, AdSense configuration and the administrator password hash when configured; file storage remains available for local development. Data and secrets stay outside Git.
 - Scrypt password verification, HTTP-only sessions, CSRF and origin checks, rate limiting, input validation, output escaping, and security headers.
 
 ## Before publishing
@@ -55,7 +56,7 @@ Google advertising is **off by default**. The website provides integration suppo
 
 ## Important limits
 
-This version uses a single Node process and local JSON settings. Sessions and rate-limit counters live in memory, so restarts sign administrators out. Use shared storage/session infrastructure before running multiple application instances. No analytics service, public leaderboard, player database, remote score collection, arbitrary HTML injection, or email sending is included.
+This version uses a single Node process. Without PostgreSQL it saves settings in local JSON; with PostgreSQL it imports that file once and stores settings and admin credentials in the database. Sessions and rate-limit counters live in memory, so restarts sign administrators out. Use shared storage/session infrastructure before running multiple application instances. No analytics service, public leaderboard, player database, remote score collection, arbitrary HTML injection, or email sending is included.
 
 The repository is implementation-ready, but domain connection, production hosting, operator/contact details, a real AdSense account, and certified consent-provider configuration remain deployment tasks. Browser visual/touch QA must be completed as described in QA.md.
 
@@ -63,6 +64,6 @@ The repository is implementation-ready, but domain connection, production hostin
 
 Open `/admin` on your deployed domain. There is no player login and no default admin password.
 
-If administrator access is locked, run `node scripts/password.mjs` in the application directory, choose a password of at least 16 characters, and put the generated `ADMIN_PASSWORD_HASH=...` line in your private `.env`. Restart the Node application using your hosting platform or process manager. Then sign in with the password you chose. Ensure SITE_URL matches the exact public origin; use COOKIE_SECURE=true on HTTPS.
+If administrator access is locked, run `node scripts/password.mjs` in the application directory, choose a password of at least 16 characters, and put the generated `ADMIN_PASSWORD_HASH=...` line in your private `.env`. Restart the Node application using your hosting platform or process manager. Then sign in as `admin` with the password you chose. When PostgreSQL is enabled, change the username and password in the dashboard. Ensure SITE_URL matches the exact public origin; use COOKIE_SECURE=true on HTTPS.
 
-Do not put the plain password or generated hash into Git. Resetting the password uses the same procedure and restarting invalidates old administrator sessions.
+Do not put the plain password or generated hash into Git. Once an admin row exists in PostgreSQL, changing the environment hash does not overwrite it. Use the dashboard to rotate credentials; restarting invalidates sessions.

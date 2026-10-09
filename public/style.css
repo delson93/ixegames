@@ -66,6 +66,8 @@ canvas{width:100%;height:100%;aspect-ratio:4/3;object-fit:contain}
 .game-page .ad-zone.google-ad-zone:has(ins[data-ad-status="unfill-optimized"]){margin-top:150px;margin-bottom:150px}
 .google-ad-zone:has(ins[data-ad-status="filled"])>span,
 .google-ad-zone:has(ins[data-ad-status="unfill-optimized"])>span{display:block}
+.site-version{white-space:nowrap;color:#b6a0ff;margin-left:9px;font-weight:700}
+.account-form{margin-top:28px;max-width:580px}
 @media(max-width:680px){
  .game-page .game-section{padding-top:12px}
  .game-section .back-link{margin-bottom:10px}
