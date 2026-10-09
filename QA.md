@@ -2,7 +2,7 @@
 
 ## Completed automated checks
 
-`npm run check` validates JavaScript syntax. `npm test` runs 54 tests covering:
+`npm run check` validates JavaScript syntax. `npm test` runs 55 tests covering:
 
 - Snake reversal and turn buffering, growth, food placement, wall/body collision, vacated tail movement and full-board win.
 - Tank movement barriers, firing cooldowns, enemy score, wave progression, brick/steel collision, armor damage and invulnerability.
@@ -74,3 +74,5 @@ Real-browser visual/touch/audio checks remain pending: play with arrows and Spac
 All eight JS assets are requested through the actual HTTP server with versioned query strings using GET and HEAD; tests require 200, JavaScript MIME and revalidation. Unknown modules return a plain-text 404. The controller smoke test additionally runs bike from a copied module directory with prism.js deliberately removed. Branding tests cover legacy settings migration, preserving custom names/operator details, and new-domain canonicals. Live reverse-proxy responses and real-browser checks remain unverified.
 
 Google CMP tests cover paused bootstrap, missing/denied/error-state gating, permitted and non-applicable consent, single slot initialization, withdrawal, external-loader mode and policy-page exclusion. HTTP tests verify saving Google mode without CMP_SCRIPT_URL and rejection of external mode without that loader. Live Google message display and ad fill remain unverified.
+
+Mobile game pages now tighten heading and toolbar spacing; portrait fullscreen keeps touch controls near the bottom. Empty Google ad slots reserve no margin until AdSense marks them filled. Check both top and bottom placements with ads blocked, consent pending, filled, and unfilled on a real phone. An ad filling after page load may move the game down.

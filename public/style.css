@@ -55,3 +55,32 @@ canvas{width:100%;height:100%;aspect-ratio:4/3;object-fit:contain}
  .touch-controls{gap:22px}.dpad{grid-template-columns:repeat(3,48px);gap:5px}
  .dpad button{width:48px;height:48px;min-width:48px!important;min-height:48px!important}
 }
+/* Keep unrequested and unfilled Google slots from reserving play space.
+   The ins remains measurable so AdSense can size a requested responsive ad. */
+.ad-zone.google-ad-zone,.game-page .ad-zone.google-ad-zone{min-height:0;margin-top:0;margin-bottom:0}
+.google-ad-zone>span{display:none}
+.google-ad-zone ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important}
+.ad-zone.google-ad-zone:has(ins[data-ad-status="filled"]),
+.ad-zone.google-ad-zone:has(ins[data-ad-status="unfill-optimized"]){min-height:110px;margin-top:35px;margin-bottom:35px}
+.game-page .ad-zone.google-ad-zone:has(ins[data-ad-status="filled"]),
+.game-page .ad-zone.google-ad-zone:has(ins[data-ad-status="unfill-optimized"]){margin-top:150px;margin-bottom:150px}
+.google-ad-zone:has(ins[data-ad-status="filled"])>span,
+.google-ad-zone:has(ins[data-ad-status="unfill-optimized"])>span{display:block}
+@media(max-width:680px){
+ .game-page .game-section{padding-top:12px}
+ .game-section .back-link{margin-bottom:10px}
+ .game-section>.section-heading{align-items:center;margin-bottom:8px}
+ .game-section>.section-heading h1{margin-top:4px}
+ .game-section .game-description{margin-bottom:10px;line-height:1.5}
+ .game-page .game-shell{margin-top:8px}
+ .game-page .scorebar{margin-top:0;margin-bottom:6px}
+ .game-page .game-toolbar{margin-top:7px}
+ .game-page .touch-controls{margin-top:8px}
+ .game-page .game-guide{margin-top:28px}
+}
+@media(max-width:680px) and (orientation:portrait){
+ .game-shell:is(:fullscreen,.theater){padding:10px max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+ .game-shell:is(:fullscreen,.theater) .game-toolbar{margin-top:auto;flex-shrink:0}
+ .game-shell:is(:fullscreen,.theater) .touch-controls{margin-top:8px;flex-shrink:0}
+ .game-shell:is(:fullscreen,.theater) .game-state{flex-shrink:0}
+}

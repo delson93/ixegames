@@ -7,6 +7,7 @@ The code supports Google AdSense integration, but approval is not guaranteed. Go
 - Useful, crawlable homepage and separate game pages with original instructions and strategy tips.
 - About, Contact, Privacy, Terms, Cookies and Accessibility pages linked in the footer.
 - Responsive top/bottom ad placements labeled Advertisement.
+- Empty Google placements collapse when consent or ad fill is unavailable; filled ads retain the game spacing.
 - At least 150 CSS pixels of separation around advertising on game pages.
 - No ads over the canvas or controls, on pause/game-over overlays, or on admin, policy and error pages.
 - No automatic ad refresh, click incentives, or rewarded-ad claims.

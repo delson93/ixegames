@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
+import {defaults} from '../src/settings.js';
+import {games} from '../src/content.js';
+import {layout,gamePage} from '../src/views.js';
 const source=await readFile(new URL('../public/app.js',import.meta.url),'utf8');
 async function boot(overrides={},ads='enabled'){
  const scripts=[],status={textContent:''};let listener,reloads=0;
@@ -26,3 +29,15 @@ test('external CMP keeps Google tag absent until consent; missing config and dis
  const disabled=await boot({enabled:false});assert.equal(disabled.scripts.length,0);
 });
 test('Google tag is not loaded on pages without ad placements',async()=>{const s=await boot({},'disabled');assert.equal(s.scripts.length,0);s.consent({gdprApplies:false});assert.equal(s.scripts.length,0);});
+test('game pages omit inactive ads and retain top and bottom slots with custom banner priority',()=>{
+ const render=s=>layout(s,{title:'Play',description:'Game',origin:'https://games.upilinks.in',path:'/games/tank',body:gamePage(games[0]),game:true,ads:true});
+ assert.doesNotMatch(render(defaults),/class="ad-zone/);
+ const enabled={...defaults,adsEnabled:true,publisherId:'ca-pub-1234567890123456',topSlot:'1234567890',bottomSlot:'9876543210'};
+ const html=render(enabled);
+ assert.equal((html.match(/class="ad-zone google-ad-zone"/g)||[]).length,2);
+ assert.ok(html.indexOf('data-ad-slot="1234567890"')<html.indexOf('class="game-section"'));
+ assert.ok(html.indexOf('data-ad-slot="9876543210"')>html.indexOf('class="game-section"'));
+ const custom=render({...enabled,topImage:'https://example.com/banner.png',topLink:'https://example.com',topAlt:'Sponsor'});
+ assert.equal((custom.match(/class="ad-zone google-ad-zone"/g)||[]).length,1);
+ assert.match(custom,/alt="Sponsor"/);
+});
