@@ -17,6 +17,8 @@ The code supports Google AdSense integration, but approval is not guaranteed. Go
 
 ## Required operator actions
 
+For a quick live check, request `/api/ad-config`. `enabled:false` means the site's own AdSense switch is off, so no Google ad requests will be made. The response also reports whether each manual slot is configured and whether CMP readiness was confirmed. Set the publisher, top and bottom display slot IDs, a published Google Privacy & messaging message (or a supported external CMP), confirm the CMP, then enable ads in `/admin` and save. The AdSense Sites and Policy center still determine whether Google will serve ads; an approved parent domain does not make an empty slot fill on demand. The browser console's blocked `data:` fonts from extensions are unrelated to AdSense requests.
+
 1. Deploy the site on your own working HTTPS domain and verify it in AdSense.
 2. Publish a real operator identity and monitored contact email in Admin. Review every policy page against actual operations. The initial text is an implementation starting point, not a jurisdiction-specific legal opinion.
 3. Create your AdSense account, obtain the `ca-pub-...` publisher ID and responsive display slot IDs.

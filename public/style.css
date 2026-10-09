@@ -68,6 +68,8 @@ canvas{width:100%;height:100%;aspect-ratio:4/3;object-fit:contain}
 .google-ad-zone:has(ins[data-ad-status="unfill-optimized"])>span{display:block}
 .site-version{white-space:nowrap;color:#b6a0ff;margin-left:9px;font-weight:700}
 .account-form{margin-top:28px;max-width:580px}
+/* Game input should never open a text-selection menu on touch screens. */
+.game-shell{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 @media(max-width:680px){
  .game-page .game-section{padding-top:12px}
  .game-section .back-link{margin-bottom:10px}
@@ -82,7 +84,23 @@ canvas{width:100%;height:100%;aspect-ratio:4/3;object-fit:contain}
 }
 @media(max-width:680px) and (orientation:portrait){
  .game-shell:is(:fullscreen,.theater){padding:10px max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
- .game-shell:is(:fullscreen,.theater) .game-toolbar{margin-top:auto;flex-shrink:0}
+ .game-shell:is(:fullscreen,.theater) .game-toolbar{margin-top:8px;flex-shrink:0}
  .game-shell:is(:fullscreen,.theater) .touch-controls{margin-top:8px;flex-shrink:0}
  .game-shell:is(:fullscreen,.theater) .game-state{flex-shrink:0}
+}
+@media(max-width:680px){
+ .game-state{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;margin:0!important;padding:0;border:0}
+ .controls-help{display:none}
+ .game-topbar-label{display:none}
+ .game-topbar{justify-content:flex-end}
+ .game-shell canvas{object-fit:fill}
+ .game-shell[data-game="bike"] .canvas-wrap,.game-shell[data-game="racing"] .canvas-wrap{aspect-ratio:3/4}
+ .game-shell[data-game="bike"] canvas,.game-shell[data-game="racing"] canvas{aspect-ratio:3/4}
+}
+@media(max-width:680px) and (orientation:portrait){
+ .game-shell:is(:fullscreen,.theater){--chrome:0}
+ .game-shell:is(:fullscreen,.theater) .canvas-wrap{width:100%;height:min(calc(100dvh - 300px),100vw);max-height:none;aspect-ratio:auto;flex:0 0 auto;margin:0 auto}
+ .game-shell:is(:fullscreen,.theater)[data-game="bike"] .canvas-wrap,
+ .game-shell:is(:fullscreen,.theater)[data-game="racing"] .canvas-wrap{height:min(calc(100dvh - 300px),calc(100vw * 4 / 3))}
+ .game-shell:is(:fullscreen,.theater) canvas{width:100%;height:100%;aspect-ratio:auto}
 }

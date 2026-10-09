@@ -12,5 +12,5 @@ test('legacy brand migrates while operator settings and custom names are preserv
  await writeFile(path.join(dir,'settings.json'),JSON.stringify({siteName:'Custom Arcade'}));assert.equal((await loadSettings(dir)).siteName,'Custom Arcade');
  }finally{await rm(dir,{recursive:true,force:true});}
  const html=layout(defaults,{title:'Play',description:'Free games',path:'/games/prism',origin:'https://games.upilinks.in',body:''});
- assert.match(html,/Play \| UPgames/);assert.match(html,/rel="canonical" href="https:\/\/games.upilinks.in\/games\/prism"/);assert.match(html,/site-version">V 1\.2\.0/);assert.doesNotMatch(html,/ixegames/);
+ assert.match(html,/Play \| UPgames/);assert.match(html,/rel="canonical" href="https:\/\/games.upilinks.in\/games\/prism"/);assert.match(html,/site-version">V 1\.2\.1/);assert.doesNotMatch(html,/ixegames/);
 });
