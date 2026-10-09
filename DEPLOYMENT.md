@@ -92,28 +92,33 @@ For multiple replicas, replace in-memory sessions and rate limits with shared st
 
 Navigate to `/admin` on the deployed origin. For example, after your domain is connected, the path is `https://games.upilinks.in/admin`. No default password is provided. Generate your password hash with `node scripts/password.mjs` from the project directory, copy the generated ADMIN_PASSWORD_HASH line into `.env`, and restart the existing Node process through your hosting platform. Use username `admin` and the plain password you chose to sign in. Once PostgreSQL is active, change credentials in the dashboard. Do not start a second process on the same port. The public HTTPS domain is explicitly allowed for admin writes. If a login still fails, verify the running code and proxy request Origin, and ensure SITE_URL matches for canonical URLs.
 
-## Cloudways deployment and custom domain
+## Cloudways Deployment Manager and custom domain
 
-Production origin: `https://games.upilinks.in`. Keep the existing server directory and PM2 name `node-app`; the GitHub repository remains `delson93/ixegames`. Set SITE_URL in `.env` and also update PM2's saved environment, because inherited variables override the env file. Never replace `.env` with an example containing an empty password hash.
+This application uses the Cloudways Deployment Manager (Framework Preset **Other**, Node v22, repository root `./`, SSR). Let Cloudways start and supervise the app. Do not also start `ecosystem.config.cjs`, `pm2 start`, or a standalone `npm start` on the same port.
 
-After placing PostgreSQL connection values in the private `.env`, run from the application directory as root (the commands operate PM2 as the app user):
+In **Deployment Manager → Settings**, set **Build Command** to `npm run check` (a finite preparation step), and **Entry File or Start Command** to `npm start`. Keep branch `main`. `npm install` is already run by Cloudways before the build. Never use `npm start` as a build command: it opens port 3000 and never exits normally. Add the production environment variables via the platform, marking passwords and database credentials Sensitive, or ensure its start command reads the app's private `.env`. Set `SITE_URL=https://games.upilinks.in`, `COOKIE_SECURE=true`, `NODE_ENV=production`, `PORT=3000`, and the PostgreSQL/admin values. Do not replace the real `.env` with an example.
+
+The manually launched PM2 process from the earlier deployment must release port 3000 before a managed redeploy. From the application directory, identify the owner and remove **only** the old `node-app` belonging to this application:
 
 ```bash
-npm install
-npm run check
-npm test
-chown xbvmrtfkgx:xbvmrtfkgx .env
-chmod 600 .env
+ss -ltnp 'sport = :3000'
+sudo -H -u xbvmrtfkgx pm2 list
 sudo -H -u xbvmrtfkgx pm2 delete node-app
-sudo -H -u xbvmrtfkgx pm2 start "$PWD/ecosystem.config.cjs"
 sudo -H -u xbvmrtfkgx pm2 save
 ss -ltnp 'sport = :3000'
+```
+
+If a listener remains, inspect its PID and command before stopping it; another `npm start` may have been launched outside PM2. Then choose **Save & Redeploy** in Deployment Manager. This brief handover interrupts the current app while Cloudways starts its managed instance. Verify after it reports success:
+
+```bash
+ss -ltnp 'sport = :3000'
+curl -fsS http://127.0.0.1:3000/healthz
 curl -s http://127.0.0.1:3000/ | grep -o '<link rel="canonical"[^>]*>'
 curl -s http://127.0.0.1:3000/api/ad-config
 curl -I 'https://games.upilinks.in/prism.js?v=20261007-upgames'
 ```
 
-The ecosystem file pins the working directory and reads the project's exact `.env` path. This prevents the earlier `/var/cw/ansible` PM2 working directory from skipping `.env`. Ensure no separate `npm start` process is still holding port 3000 before recreating PM2. If database startup fails, inspect the app logs and correct the private connection details; do not delete the existing settings file. Never print the full PM2 environment or `.env` into a public support thread.
+A failed build leaves the previously deployed version serving traffic. If port 3000 is occupied again, check `ss` and the Cloudways deployment log before creating another process. A manual-only server with no Cloudways Deployment Manager can use `ecosystem.config.cjs`; these are alternative deployment modes, not concurrent ones.
 
 Both module responses must be 200 with `Content-Type: text/javascript`. If local Node is correct but the public response is HTML, inspect the reverse proxy/CDN: forward root-level `.js` requests to this Node app and purge stale errors. Do not relabel HTML as JavaScript or remove `nosniff`. Node holds the asset allowlist in memory, so pulling files without restarting an older server can cause a new module URL to return an HTML 404.
 
@@ -125,4 +130,4 @@ Keep `.env` private and back it up before pulling; do not replace it with an exa
 
 The first start creates tables and imports the existing `DATA_DIR/settings.json` and admin hash. If PostgreSQL cannot connect, startup fails rather than silently reverting to file storage. Once migrated, database settings and credentials win on every restart. Keep a secure backup of the JSON and database. The footer displays `V 1.2.0` from package.json; increment that package version with each release.
 
-On Cloudways, beware of PM2 values overriding `.env`. Remove stale `PG*`/`DATABASE_URL` PM2 overrides or update them securely through your process manager. Restart only the managed `node-app` instance and check the running listener. Check `curl -s http://127.0.0.1:3000/api/ad-config` to confirm ads are enabled after migration. If it returns `enabled:false`, sign in at `/admin`, verify the publisher and slot IDs and the site's published consent message, and enable ads. That switch permits eligible requests but cannot guarantee Google site approval, consent, or ad fill.
+On Cloudways, keep environment values in Deployment Manager or in the private `.env` loaded by `npm start`; inherited values can override `.env`. Redeploy through Cloudways and check the running listener. Check `curl -s http://127.0.0.1:3000/api/ad-config` to confirm ads are enabled after migration. If it returns `enabled:false`, sign in at `/admin`, verify the publisher and slot IDs and the site's published consent message, and enable ads. That switch permits eligible requests but cannot guarantee Google site approval, consent, or ad fill.
