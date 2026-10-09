@@ -96,16 +96,24 @@ Navigate to `/admin` on the deployed origin. For example, after your domain is c
 
 Production origin: `https://games.upilinks.in`. Keep the existing server directory and PM2 name `node-app`; the GitHub repository remains `delson93/ixegames`. Set SITE_URL in `.env` and also update PM2's saved environment, because inherited variables override the env file. Never replace `.env` with an example containing an empty password hash.
 
-After pulling the complete release and passing checks, run as root:
+After placing PostgreSQL connection values in the private `.env`, run from the application directory as root (the commands operate PM2 as the app user):
 
 ```bash
-sed -i 's|^SITE_URL=.*|SITE_URL=https://games.upilinks.in|' .env
-sed -i 's|^COOKIE_SECURE=.*|COOKIE_SECURE=true|' .env
-sudo -H -u xbvmrtfkgx env SITE_URL=https://games.upilinks.in COOKIE_SECURE=true pm2 restart node-app --update-env
+npm install
+npm run check
+npm test
+chown xbvmrtfkgx:xbvmrtfkgx .env
+chmod 600 .env
+sudo -H -u xbvmrtfkgx pm2 delete node-app
+sudo -H -u xbvmrtfkgx pm2 start "$PWD/ecosystem.config.cjs"
 sudo -H -u xbvmrtfkgx pm2 save
-curl -I 'http://127.0.0.1:3000/prism.js?v=20261007-upgames'
+ss -ltnp 'sport = :3000'
+curl -s http://127.0.0.1:3000/ | grep -o '<link rel="canonical"[^>]*>'
+curl -s http://127.0.0.1:3000/api/ad-config
 curl -I 'https://games.upilinks.in/prism.js?v=20261007-upgames'
 ```
+
+The ecosystem file pins the working directory and reads the project's exact `.env` path. This prevents the earlier `/var/cw/ansible` PM2 working directory from skipping `.env`. Ensure no separate `npm start` process is still holding port 3000 before recreating PM2. If database startup fails, inspect the app logs and correct the private connection details; do not delete the existing settings file. Never print the full PM2 environment or `.env` into a public support thread.
 
 Both module responses must be 200 with `Content-Type: text/javascript`. If local Node is correct but the public response is HTML, inspect the reverse proxy/CDN: forward root-level `.js` requests to this Node app and purge stale errors. Do not relabel HTML as JavaScript or remove `nosniff`. Node holds the asset allowlist in memory, so pulling files without restarting an older server can cause a new module URL to return an HTML 404.
 
