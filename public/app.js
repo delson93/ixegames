@@ -14,11 +14,16 @@ async function setupAds(){
  const queue=window.adsbygoogle=window.adsbygoogle||[];
  queue.pauseAdRequests=1;
  let tagLoaded=false,tagStarted=false,allowed=false,requested=false,subscribed=false;
+ const initialized=new WeakSet();
  const request=()=>{
-  if(!allowed||!tagLoaded||requested||document.body.dataset.ads!=='enabled')return;
-  queue.pauseAdRequests=0;requested=true;
-  all('.adsbygoogle').forEach(()=>{try{queue.push({});}catch{report('An ad slot could not initialize.');}});
+  if(!allowed||!tagLoaded||document.body.dataset.ads!=='enabled')return;
+  const wide=window.matchMedia?.('(min-width: 1920px)').matches??false;
+  const units=all('.adsbygoogle').filter(el=>!initialized.has(el)&&(!['left','right'].includes(el.dataset.placement)||wide));
+  if(!units.length)return;
+  queue.pauseAdRequests=0;
+  units.forEach(el=>{try{queue.push({});initialized.add(el);requested=true;}catch{report('An ad slot could not initialize.');}});
  };
+ window.addEventListener?.('resize',request);
  const loadTag=()=>{
   if(tagStarted||document.body.dataset.ads!=='enabled')return;
   tagStarted=true;

@@ -104,3 +104,21 @@ canvas{width:100%;height:100%;aspect-ratio:4/3;object-fit:contain}
  .game-shell:is(:fullscreen,.theater)[data-game="racing"] .canvas-wrap{height:min(calc(100dvh - 300px),calc(100vw * 4 / 3))}
  .game-shell:is(:fullscreen,.theater) canvas{width:100%;height:100%;aspect-ratio:auto}
 }
+/* Side units sit in the outer page margins, away from game input. Until Google
+   fills one, the central content retains the full available width. */
+.ad-stage{position:relative;max-width:1920px;margin:auto}
+.ad-stage-content{min-width:0}
+.ad-rail{position:absolute;top:45px;width:160px;pointer-events:none}
+.ad-rail-left{left:0}
+.ad-rail-right{right:0}
+.ad-rail .ad-zone.google-ad-zone,.game-page .ad-rail .ad-zone.google-ad-zone{width:160px;max-width:none;margin:0;min-height:0}
+.ad-rail ins.adsbygoogle{width:160px;min-height:600px}
+.ad-rail:has(ins[data-ad-status="filled"]){pointer-events:auto}
+.ad-stage:has(.ad-rail-left ins[data-ad-status="filled"]) .ad-stage-content{padding-left:310px}
+.ad-stage:has(.ad-rail-right ins[data-ad-status="filled"]) .ad-stage-content{padding-right:310px}
+.ad-rail .google-ad-zone:has(ins[data-ad-status="filled"])>span{display:block}
+@media(max-width:1919px){.ad-rail{display:none}}
+.admin textarea{display:block;width:100%;min-height:110px;margin-top:7px;padding:10px;background:#11121a;color:var(--text);border:1px solid #494155;border-radius:5px;resize:vertical;font:12px/1.5 ui-monospace,SFMono-Regular,monospace}
+.admin textarea:focus-visible{outline:3px solid #c5b6ff;outline-offset:3px}
+.ad-admin-placement{border-top:1px solid #494155;margin-top:20px;padding-top:10px}
+.ad-admin-placement h3{margin:8px 0;font-size:16px}

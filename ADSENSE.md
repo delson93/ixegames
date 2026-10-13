@@ -6,7 +6,7 @@ The code supports Google AdSense integration, but approval is not guaranteed. Go
 
 - Useful, crawlable homepage and separate game pages with original instructions and strategy tips.
 - About, Contact, Privacy, Terms, Cookies and Accessibility pages linked in the footer.
-- Responsive top/bottom ad placements labeled Advertisement.
+- Responsive horizontal top/bottom ad placements and desktop-only vertical left/right placements labeled Advertisement when filled.
 - Empty Google placements collapse when consent or ad fill is unavailable; filled ads retain the game spacing.
 - At least 150 CSS pixels of separation around advertising on game pages.
 - No ads over the canvas or controls, on pause/game-over overlays, or on admin, policy and error pages.
@@ -17,7 +17,7 @@ The code supports Google AdSense integration, but approval is not guaranteed. Go
 
 ## Required operator actions
 
-For a quick live check, request `/api/ad-config`. `enabled:false` means the site's own AdSense switch is off, so no Google ad requests will be made. The response also reports whether each manual slot is configured and whether CMP readiness was confirmed. Set the publisher, top and bottom display slot IDs, a published Google Privacy & messaging message (or a supported external CMP), confirm the CMP, then enable ads in `/admin` and save. The AdSense Sites and Policy center still determine whether Google will serve ads; an approved parent domain does not make an empty slot fill on demand. The browser console's blocked `data:` fonts from extensions are unrelated to AdSense requests.
+For a quick live check, request `/api/ad-config`. `enabled:false` means the site's own AdSense switch is off, so no Google ad requests will be made. The response reports whether each of the four manual slots is configured and whether CMP readiness was confirmed. Create responsive display units in AdSense and enter their slot IDs or paste one complete standard display-ad snippet into each desired placement in `/admin`. Pasting extracts and stores only the publisher and slot ID. It does not execute or store pasted scripts. AMP snippets are not supported because this is a standard HTML site. Top/bottom use horizontal formats; side units use vertical format only at 1920px and wider and never appear on phones. Set a published Google Privacy & messaging message (or a supported external CMP), confirm the CMP, then enable ads in `/admin` and save. The AdSense Sites and Policy center still determine whether Google will serve ads; an approved parent domain does not make an empty slot fill on demand. The browser console's blocked `data:` fonts from extensions are unrelated to AdSense requests.
 
 1. Deploy the site on your own working HTTPS domain and verify it in AdSense.
 2. Publish a real operator identity and monitored contact email in Admin. Review every policy page against actual operations. The initial text is an implementation starting point, not a jurisdiction-specific legal opinion.
@@ -25,7 +25,7 @@ For a quick live check, request `/api/ad-config`. `enabled:false` means the site
 4. Choose a Google-certified consent management platform, configure the live domain, disclosures, vendors, purposes, regions and revocation UI with that provider.
 5. For Google Privacy & messaging, publish the message and select Google mode in Admin; no separate CMP_SCRIPT_URL is needed. For an external CMP, set CMP_SCRIPT_URL to its supported HTTPS loader. If the provider requires a multi-part snippet, implement that provider's documented bootstrap in public/app.js and amend the script CSP allowlist in server.js. A script URL alone is not sufficient for every provider.
 6. Verify the provider exposes `window.__tcfapi`, TCF v2 events and a working preference UI. Do not check the admin CMP confirmation until this works.
-7. Add the publisher and slot IDs in Admin, confirm the CMP, then enable Google advertising. Custom banners take priority for their matching slots.
+7. Add the publisher and slot IDs, or paste standard display snippets into the four Admin placements. Confirm the CMP, then enable Google advertising. Custom banners take priority over matching top/bottom Google slots. The same slot ID may be used more than once, but separate units provide clearer reports.
 8. Confirm `/ads.txt` contains the exact authorized seller record and is publicly crawlable.
 9. Test advertising consent, denial, withdrawal and mobile placement using your provider's test tools. Never click your own live ads.
 10. Submit the live site for Google's review and address any feedback.

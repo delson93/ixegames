@@ -36,7 +36,7 @@ npm test       # Rules, routing, admin security and persistence tests
 - Arrow/WASD controls, visible touch controls, swipe steering for Snake, pause, restart, full screen, and automatic pause on tab changes.
 - Server-rendered game pages, original guides, About, Contact, Privacy, Terms, Cookies, Accessibility, and real 404 responses.
 - Canonical URLs, meta descriptions, Open Graph/social PNG, JSON-LD, sitemap, robots.txt, favicon, and dynamic ads.txt.
-- Password-protected admin: site identity, operator/contact details, announcement, game visibility, Google publisher/slot IDs, and independent top/bottom custom banners.
+- Password-protected admin: site identity, operator/contact details, announcement, game visibility, four AdSense positions with optional snippet paste, and independent top/bottom custom banners.
 - PostgreSQL storage for settings, AdSense configuration and the administrator password hash when configured; file storage remains available for local development. Data and secrets stay outside Git.
 - Scrypt password verification, HTTP-only sessions, CSRF and origin checks, rate limiting, input validation, output escaping, and security headers.
 
